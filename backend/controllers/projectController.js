@@ -1,12 +1,18 @@
 const Project = require("../models/Project");
+const User = require("../models/User");
 
 exports.createProject = async (req, res) => {
-  const { name, description } = req.body;
   try {
-    const project = new Project({ name, description, user: req.user.id });
+    const { title, description } = req.body;
+    const userId = req.user.id;
+
+    const project = new Project({ title, description, createdBy: userId });
     await project.save();
-    res.json(project);
+
+    await User.findByIdAndUpdate(userId, { $push: { projects: project._id } });
+
+    res.status(201).json(project);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Error creating project", error });
   }
 };
