@@ -1,12 +1,14 @@
 const express = require("express");
 const User = require("../models/User");
-const authMiddleware = require("../middleware/auth"); // Ensure JWT is verified
+const authMiddleware = require("../middleware/auth"); // Ensures JWT is verified
 
 const router = express.Router();
 
 // Fetch User Data with Projects and Tasks
 router.get("/user", authMiddleware, async (req, res) => {
     try {
+        console.log("🔍 Extracted User ID:", req.userId); // Debugging log
+
         const user = await User.findById(req.userId)
             .populate("projects") // Populate projects
             .populate({
