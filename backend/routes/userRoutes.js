@@ -7,7 +7,7 @@ const router = express.Router();
 // Fetch User Data with Projects and Tasks
 router.get("/user", authMiddleware, async (req, res) => {
     try {
-        console.log("🔍 Extracted User ID:", req.userId); // Debugging log
+        console.log(" Extracted User ID:", req.userId); // Debugging log
 
         const user = await User.findById(req.userId)
             .populate("projects") // Populate projects
