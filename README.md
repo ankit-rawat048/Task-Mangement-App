@@ -1,253 +1,325 @@
 # task-mangenet-app
 #task app
+### **📌 API Testing Guide for Users, Projects, Tasks, and Subtasks (Using Postman)**  
 
-Testing the Task Management App in Postman 🚀
-To test your backend API in Postman, follow these steps:
+---
 
-🛠 1. Start Your Backend Server
-First, start the backend server:
+## **🚀 1️⃣ User API**
+### **✅ Create User**
+- **URL:** `POST http://localhost:5000/api/users`
+- **Body (JSON):**
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "123456"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "User created successfully",
+    "user": {
+      "_id": "user_id",
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+  ```
 
-bash
-Copy
-Edit
-node server.js
-or, if you are using nodemon:
+---
 
-bash
-Copy
-Edit
-nodemon server.js
-By default, your backend will run at:
-http://localhost:5000
+### **✅ Delete User**
+- **URL:** `DELETE http://localhost:5000/api/users/{user_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "User deleted successfully"
+  }
+  ```
 
-📌 2. Create a New User (Signup)
-Endpoint:
-URL: POST http://localhost:5000/api/auth/signup
+---
 
-Headers: Content-Type: application/json
+## **🛠️ 2️⃣ Project API**
+### **✅ Create a Project**
+- **URL:** `POST http://localhost:5000/api/projects`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "name": "My Project",
+    "description": "This is a sample project"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Project created successfully",
+    "project": {
+      "_id": "project_id",
+      "name": "My Project",
+      "description": "This is a sample project"
+    }
+  }
+  ```
 
-Body (JSON):
+---
 
-json
-Copy
-Edit
-{
-  "name": "Ankit Rawat",
-  "email": "ankit@example.com",
-  "password": "password123"
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "message": "User created successfully!"
-}
-📌 3. Login as a User
-Endpoint:
-URL: POST http://localhost:5000/api/auth/login
-
-Headers: Content-Type: application/json
-
-Body (JSON):
-
-json
-Copy
-Edit
-{
-  "email": "ankit@example.com",
-  "password": "password123"
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "token": "eyJhbGciOiJIUzI1...",
-  "userId": "65f2f3e45bf2..."
-}
-NOTE: Copy the token from the response. You will use this token for authorization in future API calls.
-
-📌 4. Create a New Project
-Endpoint:
-URL: POST http://localhost:5000/api/projects
-
-Headers:
-
-Content-Type: application/json
-
-Authorization: Bearer <your_token> (Replace <your_token> with the token you got from login)
-
-Body (JSON):
-
-json
-Copy
-Edit
-{
-  "title": "My Portfolio Website",
-  "description": "A personal website to showcase my projects."
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "_id": "65f3a2b12e4...",
-  "title": "My Portfolio Website",
-  "description": "A personal website to showcase my projects.",
-  "createdBy": "65f2f3e45bf2...",
-  "tasks": []
-}
-NOTE: Copy the _id of this project. You will use it in the next step.
-
-📌 5. Create a Task Under the Project
-Endpoint:
-URL: POST http://localhost:5000/api/tasks
-
-Headers:
-
-Content-Type: application/json
-
-Authorization: Bearer <your_token>
-
-Body (JSON):
-
-json
-Copy
-Edit
-{
-  "title": "Design Homepage",
-  "description": "Create a landing page for the website.",
-  "projectId": "65f3a2b12e4..."  // Replace with actual project ID
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "_id": "65f3a3c98a...",
-  "title": "Design Homepage",
-  "description": "Create a landing page for the website.",
-  "status": "pending",
-  "deadline": null,
-  "project": "65f3a2b12e4...",
-  "subtasks": []
-}
-NOTE: Copy the _id of this task if you want to create subtasks.
-
-📌 6. Create a Subtask Under a Task
-Endpoint:
-URL: POST http://localhost:5000/api/tasks
-
-Headers:
-
-Content-Type: application/json
-
-Authorization: Bearer <your_token>
-
-Body (JSON):
-
-json
-Copy
-Edit
-{
-  "title": "Add CSS Styles",
-  "description": "Style the homepage with CSS.",
-  "projectId": "65f3a2b12e4...",  // Replace with actual project ID
-  "parentTaskId": "65f3a3c98a..." // Replace with actual task ID
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "_id": "65f3a4d21b...",
-  "title": "Add CSS Styles",
-  "description": "Style the homepage with CSS.",
-  "status": "pending",
-  "deadline": null,
-  "project": "65f3a2b12e4...",
-  "subtasks": []
-}
-📌 7. Fetch User Data with Projects and Tasks
-Endpoint:
-URL: GET http://localhost:5000/api/user
-
-Headers:
-
-Authorization: Bearer <your_token>
-
-✅ Expected Response:
-
-json
-Copy
-Edit
-{
-  "name": "Ankit Rawat",
-  "email": "ankit@example.com",
-  "projects": [
+### **✅ Get All Projects**
+- **URL:** `GET http://localhost:5000/api/projects`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  [
     {
-      "title": "My Portfolio Website",
-      "tasks": [
-        {
-          "title": "Design Homepage",
-          "subtasks": [
-            {
-              "title": "Add CSS Styles"
-            }
-          ]
-        }
-      ]
+      "_id": "project_id",
+      "name": "My Project",
+      "description": "This is a sample project"
     }
   ]
-}
-📌 8. Update Task Status
-Endpoint:
-URL: PUT http://localhost:5000/api/tasks/65f3a3c98a...
+  ```
 
-Headers:
+---
 
-Content-Type: application/json
+### **✅ Update a Project**
+- **URL:** `PUT http://localhost:5000/api/projects/{project_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "name": "Updated Project Name",
+    "description": "Updated Description"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Project updated successfully",
+    "project": {
+      "_id": "project_id",
+      "name": "Updated Project Name",
+      "description": "Updated Description"
+    }
+  }
+  ```
 
-Authorization: Bearer <your_token>
+---
 
-Body (JSON):
+### **✅ Delete a Project**
+- **URL:** `DELETE http://localhost:5000/api/projects/{project_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Project deleted successfully"
+  }
+  ```
 
-json
-Copy
-Edit
-{
-  "status": "completed"
-}
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "message": "Task updated successfully"
-}
-📌 9. Delete a Task
-Endpoint:
-URL: DELETE http://localhost:5000/api/tasks/65f3a3c98a...
+---
 
-Headers:
+## **📋 3️⃣ Task API**
+### **✅ Add a Task to a Project**
+- **URL:** `POST http://localhost:5000/api/projects/{project_id}/tasks`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "title": "Task 1",
+    "completed": false
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Task added successfully",
+    "task": {
+      "_id": "task_id",
+      "title": "Task 1",
+      "completed": false
+    }
+  }
+  ```
 
-Authorization: Bearer <your_token>
+---
 
-✅ Expected Response:
-json
-Copy
-Edit
-{
-  "message": "Task deleted successfully"
-}
-🎯 Summary of API Endpoints
-Action	Method	Endpoint	Headers
-Signup	POST	/api/auth/signup	Content-Type: application/json
-Login	POST	/api/auth/login	Content-Type: application/json
-Create Project	POST	/api/projects	Authorization: Bearer <token>
-Create Task	POST	/api/tasks	Authorization: Bearer <token>
-Create Subtask	POST	/api/tasks	Authorization: Bearer <token>
-Fetch User Data	GET	/api/user	Authorization: Bearer <token>
-Update Task	PUT	/api/tasks/:taskId	Authorization: Bearer <token>
-Delete Task	DELETE	/api/tasks/:taskId	Authorization: Bearer <token>
+### **✅ Get Tasks for a Project**
+- **URL:** `GET http://localhost:5000/api/projects/{project_id}/tasks`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  [
+    {
+      "_id": "task_id",
+      "title": "Task 1",
+      "completed": false
+    }
+  ]
+  ```
+
+---
+
+### **✅ Update a Task**
+- **URL:** `PUT http://localhost:5000/api/projects/{project_id}/tasks/{task_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "title": "Updated Task",
+    "completed": true
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Task updated successfully",
+    "task": {
+      "_id": "task_id",
+      "title": "Updated Task",
+      "completed": true
+    }
+  }
+  ```
+
+---
+
+### **✅ Delete a Task**
+- **URL:** `DELETE http://localhost:5000/api/projects/{project_id}/tasks/{task_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Task deleted successfully"
+  }
+  ```
+
+---
+
+## **📌 4️⃣ Subtask API**
+### **✅ Add a Subtask to a Task**
+- **URL:** `POST http://localhost:5000/api/projects/{project_id}/tasks/{task_id}/subtasks`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "title": "Subtask 1",
+    "completed": false
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Subtask added successfully",
+    "subtask": {
+      "_id": "subtask_id",
+      "title": "Subtask 1",
+      "completed": false
+    }
+  }
+  ```
+
+---
+
+### **✅ Get Subtasks for a Task**
+- **URL:** `GET http://localhost:5000/api/projects/{project_id}/tasks/{task_id}/subtasks`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  [
+    {
+      "_id": "subtask_id",
+      "title": "Subtask 1",
+      "completed": false
+    }
+  ]
+  ```
+
+---
+
+### **✅ Update a Subtask**
+- **URL:** `PUT http://localhost:5000/api/projects/{project_id}/tasks/{task_id}/subtasks/{subtask_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Body (JSON):**
+  ```json
+  {
+    "title": "Updated Subtask",
+    "completed": true
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Subtask updated successfully",
+    "subtask": {
+      "_id": "subtask_id",
+      "title": "Updated Subtask",
+      "completed": true
+    }
+  }
+  ```
+
+---
+
+### **✅ Delete a Subtask**
+- **URL:** `DELETE http://localhost:5000/api/projects/{project_id}/tasks/{task_id}/subtasks/{subtask_id}`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Subtask deleted successfully"
+  }
+  ```
+
+---
+
+## **🔧 Steps to Test in Postman**
+1. **Start your backend**:  
+   ```sh
+   npm run dev
+   ```
+2. **Use Postman** to send requests.  
+3. **For protected routes**, add `Authorization: Bearer YOUR_TOKEN` in **Headers**.  
+4. **Check console logs** if anything goes wrong.  
+
+---
+
+🚀 **Now you can easily test your backend with Postman!** Let me know if you need any modifications! 🚀

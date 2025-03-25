@@ -16,17 +16,17 @@ module.exports = (req, res, next) => {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         console.log("🔑 Decoded Token:", verified); // Debugging log
 
-        // Ensure userId is present
-        if (!verified.userId) {
-            return res.status(400).json({ message: "Invalid token: userId missing" });
+        // Ensure user ID exists in the token
+        if (!verified.id) {
+            return res.status(400).json({ message: "Invalid token: user ID missing" });
         }
 
-        req.userId = verified.userId; // ✅ Fix: Set userId correctly
-        console.log("✅ Set req.userId:", req.userId); // Debugging log
+        req.user = { id: verified.id }; // ✅ Set user object with ID
+        console.log("✅ Set req.user:", req.user); // Debugging log
 
         next();
     } catch (err) {
         console.error("❌ Invalid Token Error:", err.message);
-        res.status(400).json({ message: "Invalid Token!" });
+        res.status(401).json({ message: "Invalid Token!" });
     }
 };
