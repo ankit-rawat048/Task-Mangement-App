@@ -8,7 +8,6 @@
 ### **✅ Create User**
 - **URL:** `POST http://localhost:5000/api/auth/signup`
 - **Body (JSON):**
-  ```json
 {
     "name": "John Doe",
     "username": "johndoe12",
@@ -17,19 +16,11 @@
 }
 
   ```
-- **Response:**
-  ```json
-  {
-    "message": "User created successfully!",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2UzZjViMGUxN2FkZDNlNmI2OWM1OGUiLCJpYXQiOjE3NDI5OTI4MTYsImV4cCI6MTc0Mjk5NjQxNn0.9V4DmyDwQVP1YqW6PUmsVohkH6yIBjM3fs8bpLDVoRo",
-    "userId": "67e3f5b0e17add3e6b69c58e"
-}
   ```
 
 ### **✅ Login User**
 - **URL:** `POST http://localhost:5000/api/auth/login`
 - **Body (JSON):**
-  ```json
 {
     "username": "johndoe123",
     "password": "password123"
@@ -60,14 +51,6 @@ or
 {
     "userId": "65efc5b12a3b4d001fb3b4a5"
 }
-
-
-- **Response:**
-  ```json
-  {
-    "message": "User deleted successfully"
-  }
-  ```
 
 ---
 
@@ -105,17 +88,25 @@ or
   ```
   Authorization: Bearer your_jwt_token_here
   ```
-- **Response:**
-  ```json
-  [
-    {
-      "_id": "project_id",
-      "name": "My Project",
-      "description": "This is a sample project"
-    }
-  ]
-  ```
+---
+---
 
+### **✅ Get single Project**
+- **URL:** `GET http://localhost:5000/api/projects/:id`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+---
+
+---
+
+### **✅ Delete a Projects**
+- **URL:** `GET http://localhost:5000/api/projects/:id`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
 ---
 
 ### **✅ Update a Project**
@@ -143,22 +134,6 @@ or
   }
   ```
 
----
-
-### **✅ Delete a Project**
-- **URL:** `DELETE http://localhost:5000/api/projects/{project_id}`
-- **Headers:**
-  ```
-  Authorization: Bearer your_jwt_token_here
-  ```
-- **Response:**
-  ```json
-  {
-    "message": "Project deleted successfully"
-  }
-  ```
-
----
 
 ## **📋 3️⃣ Task API**
 ### **✅ Add a Task to a Project**

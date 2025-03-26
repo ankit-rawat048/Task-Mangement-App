@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
         console.log("🔑 Decoded Token:", verified); // Debugging log
 
         // Ensure user ID exists in the token
-        if (!verified.id) {
+        if (!verified.userId) {
             return res.status(400).json({ message: "Invalid token: user ID missing" });
         }
 
