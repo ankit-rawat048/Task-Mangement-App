@@ -6,35 +6,62 @@
 
 ## **🚀 1️⃣ User API**
 ### **✅ Create User**
-- **URL:** `POST http://localhost:5000/api/users`
+- **URL:** `POST http://localhost:5000/api/auth/signup`
 - **Body (JSON):**
   ```json
-  {
+{
     "name": "John Doe",
-    "email": "john@example.com",
-    "password": "123456"
-  }
+    "username": "johndoe12",
+    "email": "johndoe@example.com",
+    "password": "password123"
+}
+
   ```
 - **Response:**
   ```json
   {
-    "message": "User created successfully",
-    "user": {
-      "_id": "user_id",
-      "name": "John Doe",
-      "email": "john@example.com"
-    }
-  }
+    "message": "User created successfully!",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2UzZjViMGUxN2FkZDNlNmI2OWM1OGUiLCJpYXQiOjE3NDI5OTI4MTYsImV4cCI6MTc0Mjk5NjQxNn0.9V4DmyDwQVP1YqW6PUmsVohkH6yIBjM3fs8bpLDVoRo",
+    "userId": "67e3f5b0e17add3e6b69c58e"
+}
   ```
 
+### **✅ Login User**
+- **URL:** `POST http://localhost:5000/api/auth/login`
+- **Body (JSON):**
+  ```json
+{
+    "username": "johndoe123",
+    "password": "password123"
+}
+or
+
+{
+    "email": "johndoe@example.com",
+    "password": "password123"
+}
+
+  ```
 ---
 
+  ```
 ### **✅ Delete User**
-- **URL:** `DELETE http://localhost:5000/api/users/{user_id}`
+- **URL:** `DELETE http://localhost:5000/api/auth/delete`
 - **Headers:**
   ```
   Authorization: Bearer your_jwt_token_here
   ```
+  json:
+  delete by :
+  {
+    "email": "johndoe@example.com"
+}
+or
+{
+    "userId": "65efc5b12a3b4d001fb3b4a5"
+}
+
+
 - **Response:**
   ```json
   {
