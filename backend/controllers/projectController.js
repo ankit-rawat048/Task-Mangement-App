@@ -1,66 +1,65 @@
 const Project = require("../models/Project");
 const User = require("../models/User");
 
+// 🔹 Create a new project
 exports.createProject = async (req, res) => {
     try {
+        if (!req.userId) {
+            return res.status(401).json({ message: "Unauthorized: No user ID found" });
+        }
+
         const { title, description } = req.body;
-        const userId = req.user.id;
 
-        const project = new Project({ title, description, createdBy: userId });
-        await project.save();
+        const project = await Project.create({ title, description, createdBy: req.userId });
 
-        await User.findByIdAndUpdate(userId, { $push: { projects: project._id } });
+        await User.findByIdAndUpdate(req.userId, { $push: { projects: project._id } });
 
-        res.status(201).json(project);
+        res.status(201).json({ message: "Project created successfully!", project });
     } catch (error) {
-        console.error("❌ Error creating project:", error);
-        res.status(500).json({ message: "Error creating project", error });
+        console.error("❌ Error creating project:", error.message);
+        res.status(500).json({ message: "Error creating project", error: error.message });
     }
 };
 
-// ✅ Get all projects for the logged-in user
+// 🔹 Get all projects for the logged-in user
 exports.getProjects = async (req, res) => {
     try {
-        const userId = req.user.id;
-        console.log("Fetching projects for user:", userId); // Debugging log
+        if (!req.userId) {
+            return res.status(401).json({ message: "Unauthorized: No user ID found" });
+        }
 
-        const projects = await Project.find({ createdBy: userId });
+        const projects = await Project.find({ createdBy: req.userId });
         res.status(200).json(projects);
     } catch (error) {
-        console.error("❌ Error fetching projects:", error);
-        res.status(500).json({ message: "Error fetching projects", error });
+        console.error("❌ Error fetching projects:", error.message);
+        res.status(500).json({ message: "Error fetching projects", error: error.message });
     }
 };
 
-// get only one project for the logged in user 
+// 🔹 Get a single project by ID
 exports.getOnlyProject = async (req, res) => {
     try {
-        const userId = req.user.id;
-        const projectId = req.params.id; // Get project ID from URL params
+        const { id } = req.params;
 
-        console.log(`Fetching project ${projectId} for user: ${userId}`);
-
-        const project = await Project.findOne({ _id: projectId, createdBy: userId }); // ✅ Find only one project
+        const project = await Project.findOne({ _id: id, createdBy: req.userId });
 
         if (!project) {
-            return res.status(404).json({ message: "Project not found" });
+            return res.status(404).json({ message: "Project not found or unauthorized!" });
         }
 
         res.status(200).json(project);
     } catch (error) {
-        console.error("❌ Error fetching project:", error);
-        res.status(500).json({ message: "Error fetching project", error });
+        console.error("❌ Error fetching project:", error.message);
+        res.status(500).json({ message: "Error fetching project", error: error.message });
     }
 };
 
-//detele a project using 
+// 🔹 Delete a project
 exports.deleteProject = async (req, res) => {
     try {
-        const { id } = req.params; // Get project ID from URL params
-        const userId = req.user.id; // Get logged-in user ID
+        const { id } = req.params;
 
-        // Find the project and ensure it belongs to the user
-        const project = await Project.findOneAndDelete({ _id: id, createdBy: userId });
+        const project = await Project.findOneAndDelete({ _id: id, createdBy: req.userId });
 
         if (!project) {
             return res.status(404).json({ message: "Project not found or unauthorized!" });
@@ -68,23 +67,21 @@ exports.deleteProject = async (req, res) => {
 
         res.json({ message: "Project deleted successfully!" });
     } catch (error) {
-        console.error("❌ Error deleting project:", error);
-        res.status(500).json({ message: "Failed to delete project!", error });
+        console.error("❌ Error deleting project:", error.message);
+        res.status(500).json({ message: "Failed to delete project!", error: error.message });
     }
 };
 
-//Update a project using 
+// 🔹 Update a project
 exports.updateProject = async (req, res) => {
     try {
-        const { id } = req.params; // Get project ID from URL params
-        const userId = req.user.id; // Get logged-in user ID
-        const { title, description } = req.body; // Get new data from request body
+        const { id } = req.params;
+        const { title, description } = req.body;
 
-        // Find the project and update it if it belongs to the user
         const project = await Project.findOneAndUpdate(
-            { _id: id, createdBy: userId }, // Find by ID and user
-            { $set: { title, description } }, // Update fields
-            { new: true, runValidators: true } // Return updated project
+            { _id: id, createdBy: req.userId },
+            { $set: { title, description } },
+            { new: true, runValidators: true }
         );
 
         if (!project) {
@@ -93,7 +90,7 @@ exports.updateProject = async (req, res) => {
 
         res.json({ message: "Project updated successfully!", project });
     } catch (error) {
-        console.error("❌ Error updating project:", error);
-        res.status(500).json({ message: "Failed to update project!", error });
+        console.error("❌ Error updating project:", error.message);
+        res.status(500).json({ message: "Failed to update project!", error: error.message });
     }
 };
