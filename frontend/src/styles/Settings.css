@@ -1,0 +1,61 @@
+/* Settings Page Styles */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #141e30, #243b55);
+    color: white;
+    text-align: center;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: #ff4d4d;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    background: rgba(255, 77, 77, 0.2);
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+  
+  button {
+    width: 200px;
+    padding: 12px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .delete-button {
+    background: #ff4d4d;
+    color: white;
+  }
+  
+  .delete-button:hover {
+    background: #cc0000;
+  }
+  
+  .logout-button {
+    background: #ffcc00;
+    color: black;
+  }
+  
+  .logout-button:hover {
+    background: #e6b800;
+  }
+  

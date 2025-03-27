@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import '../styles/Login.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -65,6 +66,7 @@ const Login = () => {
             className="input-field" 
           />
           <button type="submit" className="submit-button">Login</button>
+          <p>if you are new here <Link to={('/signup')}>Create new account</Link></p>
         </form>
       </div>
     </div>
