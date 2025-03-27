@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({name: "", username:"", email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -39,6 +39,21 @@ const Signup = () => {
         <h2 className="signup-title">Sign Up</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
+        <input 
+            type="name" 
+            name="name" 
+            placeholder="name" 
+            value={formData.name} 
+            onChange={handleChange} 
+            required 
+          /><input 
+          type="username" 
+          name="username" 
+          placeholder="Username" 
+          value={formData.username} 
+          onChange={handleChange} 
+          required 
+        />
           <input 
             type="email" 
             name="email" 

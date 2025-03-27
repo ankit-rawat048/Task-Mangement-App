@@ -31,7 +31,7 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        navigate("/dashboard");
+        navigate("/dashboard"); // ✅ Redirect after successful login
       } else {
         setError(data.message || "Invalid email or password");
       }

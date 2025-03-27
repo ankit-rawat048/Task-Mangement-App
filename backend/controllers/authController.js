@@ -35,6 +35,23 @@ exports.login = async (req, res) => {
     }
 };
 
+exports.logout = (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+
+        if (!authHeader || !authHeader.startsWith("Bearer")) {
+            return res.status(400).json({ message: "No token provided" });
+        }
+
+        const token = authHeader.split(" ")[1].trim();
+        blacklist.add(token);
+
+        res.son({ message: "Logged out successfully!"});
+    } catch (error) {
+        res.status(500).json({ message: "Logout failed!", error});
+    }
+};
+
 exports.deleteUser = async (req, res) => {
     try {
         const { userId, email, username } = req.body;

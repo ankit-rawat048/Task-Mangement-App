@@ -52,6 +52,17 @@ or
     "userId": "65efc5b12a3b4d001fb3b4a5"
 }
 
+```
+---
+
+  ```
+### **✅ fetch Users**
+- **URL:** `DELETE http://localhost:5000/api/user`
+- **Headers:**
+  ```
+  Authorization: Bearer your_jwt_token_here
+  ```
+  
 ---
 
 ## **🛠️ 2️⃣ Project API**
