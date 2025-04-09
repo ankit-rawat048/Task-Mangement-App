@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
+import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const createProjects = () =>{
+    navigate('/createproject');
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -44,6 +52,9 @@ const Dashboard = () => {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
+      <h1><Link to={'/settings'}>settings</Link></h1>
+      <h1><Link to={'/projects'}>projects</Link></h1>
+      <button onClick={createProjects}>create new project</button>
 
       {loading ? (
         <p>Loading projects...</p>
@@ -57,6 +68,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <p>No projects found. Start by creating a new project!</p>
+
       )}
     </div>
   );

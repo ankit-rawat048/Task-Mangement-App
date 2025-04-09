@@ -7,40 +7,69 @@ const ProjectDetails = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/projects/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProject = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch project details");
+        }
+
+        const data = await response.json();
         setProject(data.project);
         setTasks(data.tasks);
-      })
-      .catch((error) => console.error("Error fetching project details:", error));
-  }, [id]);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error:", err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
 
-  const addTask = (newTask) => {
-    fetch(`http://localhost:5000/api/projects/${id}/tasks`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newTask),
-    })
-      .then((res) => res.json())
-      .then((data) => setTasks([...tasks, data]))
-      .catch((error) => console.error("Error adding task:", error));
+    fetchProject();
+  }, [id, token]);
+
+  const addTask = async (newTask) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/projects/${id}/tasks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add task");
+      }
+
+      const data = await response.json();
+      setTasks([...tasks, data]);
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
+
+  if (loading) return <p className="p-4">Loading project details...</p>;
+  if (error) return <p className="text-red-500 p-4">Error: {error}</p>;
 
   return (
     <div className="p-4">
-      {project ? (
-        <>
-          <h1 className="text-xl font-bold">{project.title}</h1>
-          <p className="text-gray-600">{project.description}</p>
-          <TaskForm onTaskSubmit={addTask} />
-          <TaskList tasks={tasks} />
-        </>
-      ) : (
-        <p>Loading project details...</p>
-      )}
+      <h1 className="text-xl font-bold">{project.name}</h1>
+      <p className="text-gray-600 mb-4">{project.description}</p>
+      <TaskForm onTaskSubmit={addTask} />
+      <TaskList tasks={tasks} />
     </div>
   );
 };
