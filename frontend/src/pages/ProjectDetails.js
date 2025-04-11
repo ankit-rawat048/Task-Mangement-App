@@ -4,7 +4,7 @@ import TaskList from "../components/TaskList";
 import TaskForm from "../components/TaskForm";
 
 const ProjectDetails = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // 🔍 Get project ID from URL
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +26,10 @@ const ProjectDetails = () => {
         }
 
         const data = await response.json();
+
+        // Update project and tasks state
         setProject(data.project);
-        setTasks(data.tasks);
+        setTasks(data.tasks || []); // Default to empty if tasks missing
         setLoading(false);
       } catch (err) {
         console.error("Error:", err);
@@ -55,7 +57,7 @@ const ProjectDetails = () => {
       }
 
       const data = await response.json();
-      setTasks([...tasks, data]);
+      setTasks((prevTasks) => [...prevTasks, data]);
     } catch (error) {
       console.error("Error adding task:", error);
     }
@@ -66,8 +68,9 @@ const ProjectDetails = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold">{project.name}</h1>
-      <p className="text-gray-600 mb-4">{project.description}</p>
+      <h1 className="text-xl font-bold">{project?.name}</h1>
+      <p className="text-gray-600 mb-4">{project?.description}</p>
+
       <TaskForm onTaskSubmit={addTask} />
       <TaskList tasks={tasks} />
     </div>

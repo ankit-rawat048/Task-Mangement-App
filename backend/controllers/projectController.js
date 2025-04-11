@@ -8,9 +8,15 @@ exports.createProject = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized: No user ID found" });
         }
 
-        const { title, description } = req.body;
+        const { title, description, tags, dueDate } = req.body;
 
-        const project = await Project.create({ title, description, createdBy: req.userId });
+        const project = await Project.create({
+            title,
+            description,
+            tags,
+            dueDate,
+            createdBy: req.userId
+        });
 
         await User.findByIdAndUpdate(req.userId, { $push: { projects: project._id } });
 
@@ -20,6 +26,7 @@ exports.createProject = async (req, res) => {
         res.status(500).json({ message: "Error creating project", error: error.message });
     }
 };
+
 
 // 🔹 Get all projects for the logged-in user
 exports.getProjects = async (req, res) => {

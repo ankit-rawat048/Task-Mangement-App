@@ -17,7 +17,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/dashboard" element={<Dashboard />}/>
         <Route path="/createproject" element={<CreateProject />}/>
-        <Route path="/projectdetails" element={<ProjectDetails />}/>
+        <Route path="/projectdetails/:id" element={<ProjectDetails />}/>
         <Route path="/projects" element={<Projects />}/>
       </Routes>
     </Router>
