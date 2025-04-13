@@ -1,39 +1,31 @@
+// src/pages/ProjectDetails.js
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import TaskList from "../components/TaskList";
-import TaskForm from "../components/TaskForm";
 
 const ProjectDetails = () => {
-  const { id } = useParams(); // 🔍 Get project ID from URL
+  const { id } = useParams();
   const [project, setProject] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+          method: "GET",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch project details");
-        }
+        if (!response.ok) throw new Error("Failed to fetch project");
 
         const data = await response.json();
-
-        // Update project and tasks state
-        setProject(data.project);
-        setTasks(data.tasks || []); // Default to empty if tasks missing
-        setLoading(false);
-      } catch (err) {
-        console.error("Error:", err);
-        setError(err.message);
+        setProject(data);
+      } catch (error) {
+        console.error("Error fetching project:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -41,38 +33,27 @@ const ProjectDetails = () => {
     fetchProject();
   }, [id, token]);
 
-  const addTask = async (newTask) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/projects/${id}/tasks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newTask),
-      });
+  if (loading) return <p>Loading project details...</p>;
+  if (!project) return <p>Project not found.</p>;
 
-      if (!response.ok) {
-        throw new Error("Failed to add task");
-      }
-
-      const data = await response.json();
-      setTasks((prevTasks) => [...prevTasks, data]);
-    } catch (error) {
-      console.error("Error adding task:", error);
-    }
-  };
-
-  if (loading) return <p className="p-4">Loading project details...</p>;
-  if (error) return <p className="text-red-500 p-4">Error: {error}</p>;
+  const formattedDate = project.dueDate
+    ? new Date(project.dueDate).toLocaleDateString()
+    : "No due date";
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">{project?.name}</h1>
-      <p className="text-gray-600 mb-4">{project?.description}</p>
-
-      <TaskForm onTaskSubmit={addTask} />
-      <TaskList tasks={tasks} />
+    <div className="project-details-container">
+      <h1>{project.title}</h1>
+      <p><strong>Description:</strong> {project.description}</p>
+      <p><strong>Due Date:</strong> {formattedDate}</p>
+      <div>
+        <strong>Tasks:</strong>
+        <ul>
+          {project.tasks?.map((task, index) => (
+            <li key={index}>{task}</li>
+          ))}
+        </ul>
+      </div>
+      <p><strong>Tags:</strong> {Array.isArray(project.tags) ? project.tags.join(", ") : project.tags}</p>
     </div>
   );
 };

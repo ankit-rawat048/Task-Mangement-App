@@ -40,7 +40,7 @@ const CreateProject = () => {
         setDueDate('');
 
         setTimeout(() => {
-          navigate(`/projectdetails/${data.project._id}`);
+          navigate(`/projects`);
         }, 1000);
       } else {
         const errData = await response.json();

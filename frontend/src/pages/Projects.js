@@ -44,7 +44,7 @@ const Projects = () => {
     <div className="projects-container">
       <div className="projects-header">
         <h1>Your Projects</h1>
-        <Link to="/projects/new" className="create-btn">
+        <Link to="/projectdeltails/:id" className="create-btn">
           + Create Project
         </Link>
       </div>
