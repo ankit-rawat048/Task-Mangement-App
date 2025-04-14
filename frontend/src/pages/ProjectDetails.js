@@ -1,26 +1,26 @@
-// src/pages/ProjectDetails.js
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "../styles/ProjectDetails.css";
 
 const ProjectDetails = () => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [taskName, setTaskName] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [editingTaskId, setEditingTaskId] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!response.ok) throw new Error("Failed to fetch project");
-
         const data = await response.json();
         setProject(data);
       } catch (error) {
@@ -29,31 +29,129 @@ const ProjectDetails = () => {
         setLoading(false);
       }
     };
-
     fetchProject();
   }, [id, token]);
 
-  if (loading) return <p>Loading project details...</p>;
-  if (!project) return <p>Project not found.</p>;
+  const handleAddOrUpdateTask = async (e) => {
+    e.preventDefault();
+    const url = editingTaskId
+      ? `http://localhost:5000/api/tasks/${editingTaskId}`
+      : `http://localhost:5000/api/tasks/projects/${id}/tasks`;
 
-  const formattedDate = project.dueDate
-    ? new Date(project.dueDate).toLocaleDateString()
-    : "No due date";
+    const method = editingTaskId ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: taskName,
+          deadline: dueDate,
+        }),
+      });
+
+      const updatedTask = await response.json();
+
+      setProject((prev) => ({
+        ...prev,
+        tasks: editingTaskId
+          ? prev.tasks.map((t) => (t._id === editingTaskId ? updatedTask.task || updatedTask : t))
+          : [...(prev.tasks || []), updatedTask],
+      }));
+
+      setTaskName("");
+      setDueDate("");
+      setEditingTaskId(null);
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error saving task:", error);
+    }
+  };
+
+  const handleEditTask = (task) => {
+    setTaskName(task.title);
+    setDueDate(task.deadline?.split("T")[0] || "");
+    setEditingTaskId(task._id);
+    setShowForm(true);
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProject((prev) => ({
+        ...prev,
+        tasks: prev.tasks.filter((task) => task._id !== taskId),
+      }));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (!project) return <p>Project not found.</p>;
 
   return (
     <div className="project-details-container">
       <h1>{project.title}</h1>
       <p><strong>Description:</strong> {project.description}</p>
-      <p><strong>Due Date:</strong> {formattedDate}</p>
-      <div>
-        <strong>Tasks:</strong>
-        <ul>
-          {project.tasks?.map((task, index) => (
-            <li key={index}>{task}</li>
-          ))}
-        </ul>
-      </div>
-      <p><strong>Tags:</strong> {Array.isArray(project.tags) ? project.tags.join(", ") : project.tags}</p>
+      <p><strong>Due Date:</strong> {project.dueDate ? new Date(project.dueDate).toLocaleDateString() : "None"}</p>
+
+      <h3>Tasks</h3>
+      <ul>
+        {project.tasks?.map((task) => (
+          <li key={task._id}>
+            <strong>{task.title}</strong> — {task.status}
+            {task.deadline && <> — Due: {new Date(task.deadline).toLocaleDateString()}</>}
+            <button onClick={() => handleEditTask(task)}>Edit</button>
+            <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      <button onClick={() => setShowForm(true)}>Add Task</button>
+
+      {showForm && (
+        <div className="form-popup">
+          <form className="form-container" onSubmit={handleAddOrUpdateTask}>
+            <h1>{editingTaskId ? "Edit Task" : "Add Task"}</h1>
+
+            <label><b>Task Name</b></label>
+            <input
+              type="text"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              required
+            />
+
+            <label><b>Due Date</b></label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+
+            <button type="submit" className="btn">
+              {editingTaskId ? "Update" : "Add"}
+            </button>
+            <button type="button" className="btn cancel" onClick={() => {
+              setShowForm(false);
+              setEditingTaskId(null);
+              setTaskName("");
+              setDueDate("");
+            }}>
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
