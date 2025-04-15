@@ -43,23 +43,31 @@ exports.getProjects = async (req, res) => {
     }
 };
 
-// 🔹 Get a single project by ID
+// 🔹 Get a single project by ID (with populated tasks and subtasks)
 exports.getOnlyProject = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        const project = await Project.findOne({ _id: id, createdBy: req.userId });
-
-        if (!project) {
-            return res.status(404).json({ message: "Project not found or unauthorized!" });
-        }
-
-        res.status(200).json(project);
+      const { id } = req.params;
+  
+      const project = await Project.findOne({ _id: id, createdBy: req.userId })
+        .populate({
+          path: "tasks",
+          populate: {
+            path: "subtasks", // ✅ This works if Task schema has subtasks as ObjectId refs
+          },
+        });
+  
+      if (!project) {
+        return res.status(404).json({ message: "Project not found or unauthorized!" });
+      }
+  
+      res.status(200).json(project);
     } catch (error) {
-        console.error("❌ Error fetching project:", error.message);
-        res.status(500).json({ message: "Error fetching project", error: error.message });
+      console.error("❌ Error fetching project:", error.message);
+      res.status(500).json({ message: "Error fetching project", error: error.message });
     }
-};
+  };
+  
+
 
 // 🔹 Delete a project
 exports.deleteProject = async (req, res) => {

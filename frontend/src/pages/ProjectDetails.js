@@ -9,6 +9,7 @@ const ProjectDetails = () => {
   const [showForm, setShowForm] = useState(false);
   const [taskName, setTaskName] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [taskStatus, setTaskStatus] = useState("pending");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const token = localStorage.getItem("token");
 
@@ -21,7 +22,9 @@ const ProjectDetails = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const data = await response.json();
+        console.log("Project details fetched:", data); // ✅ log project to console
         setProject(data);
       } catch (error) {
         console.error("Error fetching project:", error);
@@ -50,6 +53,7 @@ const ProjectDetails = () => {
         body: JSON.stringify({
           title: taskName,
           deadline: dueDate,
+          status: taskStatus,
         }),
       });
 
@@ -64,6 +68,7 @@ const ProjectDetails = () => {
 
       setTaskName("");
       setDueDate("");
+      setTaskStatus("pending");
       setEditingTaskId(null);
       setShowForm(false);
     } catch (error) {
@@ -74,6 +79,7 @@ const ProjectDetails = () => {
   const handleEditTask = (task) => {
     setTaskName(task.title);
     setDueDate(task.deadline?.split("T")[0] || "");
+    setTaskStatus(task.status || "pending");
     setEditingTaskId(task._id);
     setShowForm(true);
   };
@@ -107,10 +113,22 @@ const ProjectDetails = () => {
       <ul>
         {project.tasks?.map((task) => (
           <li key={task._id}>
-            <strong>{task.title}</strong> — {task.status}
+            <strong>{task.title}</strong> — <em>{task.status}</em>
             {task.deadline && <> — Due: {new Date(task.deadline).toLocaleDateString()}</>}
-            <button onClick={() => handleEditTask(task)}>Edit</button>
-            <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+            <div className="task-actions">
+              <button onClick={() => handleEditTask(task)}>Edit</button>
+              <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+            </div>
+
+            {task.subtasks?.length > 0 && (
+              <ul>
+                {task.subtasks.map((sub) => (
+                  <li key={sub._id}>
+                    ↳ {sub.title} — <em>{sub.status}</em>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ul>
@@ -138,15 +156,31 @@ const ProjectDetails = () => {
               required
             />
 
+            <label><b>Status</b></label>
+            <select
+              value={taskStatus}
+              onChange={(e) => setTaskStatus(e.target.value)}
+              required
+            >
+              <option value="pending">Pending</option>
+              <option value="in progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+
             <button type="submit" className="btn">
               {editingTaskId ? "Update" : "Add"}
             </button>
-            <button type="button" className="btn cancel" onClick={() => {
-              setShowForm(false);
-              setEditingTaskId(null);
-              setTaskName("");
-              setDueDate("");
-            }}>
+            <button
+              type="button"
+              className="btn cancel"
+              onClick={() => {
+                setShowForm(false);
+                setEditingTaskId(null);
+                setTaskName("");
+                setDueDate("");
+                setTaskStatus("pending");
+              }}
+            >
               Cancel
             </button>
           </form>

@@ -1,7 +1,8 @@
+// src/pages/Projects.js
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { Link } from "react-router-dom";
-import '../styles/Projects.css';
+import "../styles/Projects.css";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -44,7 +45,7 @@ const Projects = () => {
     <div className="projects-container">
       <div className="projects-header">
         <h1>Your Projects</h1>
-        <Link to="/projectdeltails/:id" className="create-btn">
+        <Link to="/create-project" className="create-btn">
           + Create Project
         </Link>
       </div>

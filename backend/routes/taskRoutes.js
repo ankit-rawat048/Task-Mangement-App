@@ -6,10 +6,10 @@ const auth = require("../middleware/auth");
 
 const router = express.Router();
 
-// ✅ Original generic task creation
+// ✅ Create standalone or subtask
 router.post("/", auth, createTask);
 
-// ✅ New route to create task and attach to a project
+// ✅ Create task and attach to project directly
 router.post("/projects/:projectId/tasks", auth, async (req, res) => {
   try {
     const { title, description, deadline } = req.body;
@@ -26,37 +26,69 @@ router.post("/projects/:projectId/tasks", auth, async (req, res) => {
   }
 });
 
-// ✅ Update Task Info
-router.put("/:taskId", auth, async (req, res) => {
-    try {
-      const { taskId } = req.params;
-      const { title, deadline, status } = req.body;
-  
-      const task = await Task.findById(taskId);
-      if (!task) return res.status(404).json({ message: "Task not found" });
-  
-      if (title) task.title = title;
-      if (deadline) task.deadline = deadline;
-      if (status) task.status = status;
-  
-      await task.save();
-  
-      res.json({ message: "Task updated successfully", task });
-    } catch (error) {
-      res.status(500).json({ message: "Error updating task", error: error.message });
-    }
-  });
-  
+// ✅ Get all tasks
+router.get("/", auth, async (req, res) => {
+  try {
+    const tasks = await Task.find().populate("project");
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks", error: error.message });
+  }
+});
 
-// ✅ Delete Task
+// ✅ Get single task
+router.get("/:taskId", auth, async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const task = await Task.findById(taskId).populate("project subtasks");
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching task", error: error.message });
+  }
+});
+
+// ✅ Get all tasks by project ID
+router.get("/projects/:projectId", auth, async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const tasks = await Task.find({ project: projectId });
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks by project", error: error.message });
+  }
+});
+
+// ✅ Update task
+router.put("/:taskId", auth, async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { title, deadline, status } = req.body;
+
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    if (title) task.title = title;
+    if (deadline) task.deadline = deadline;
+    if (status) task.status = status;
+
+    await task.save();
+
+    res.json({ message: "Task updated successfully", task });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating task", error: error.message });
+  }
+});
+
+// ✅ Delete task
 router.delete("/:taskId", auth, async (req, res) => {
   try {
     const { taskId } = req.params;
 
     const task = await Task.findById(taskId);
-    if (!task) {
-      return res.status(404).json({ message: "Task not found!" });
-    }
+    if (!task) return res.status(404).json({ message: "Task not found" });
 
     await Task.findByIdAndDelete(taskId);
     res.json({ message: "Task deleted successfully" });

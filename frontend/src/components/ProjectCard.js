@@ -12,6 +12,10 @@ const ProjectCard = ({ project }) => {
     ? project.tags.split(",").map((tag) => tag.trim())
     : [];
 
+  const handleClick = () => {
+    console.log("Clicked project:", project); // ✅ log the full project
+  };
+
   return (
     <div className="project-card">
       <h2 className="project-title">{project.title}</h2>
@@ -35,7 +39,11 @@ const ProjectCard = ({ project }) => {
         </div>
       )}
 
-      <Link to={`/projectdetails/${project._id}`} className="details-link">
+      <Link
+        to={`/projectdetails/${project._id}`}
+        className="details-link"
+        onClick={handleClick}
+      >
         View Details →
       </Link>
     </div>
