@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { Link } from "react-router-dom";
-import "../styles/Projects.css";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);

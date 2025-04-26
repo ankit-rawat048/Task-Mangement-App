@@ -5,40 +5,38 @@ import { Link, useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const navigate = useNavigate();
 
-
-  const [projects, setProjects] = useState([]);
+  const [recentProjects, setRecentProjects] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const createProjects = () =>{
-    navigate('/createproject');
-  };
+  const createProjects = () => navigate('/createproject');
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const token = localStorage.getItem("token"); // ✅ Retrieve JWT token from localStorage
+    const fetchDashboardData = async () => {
+      const token = localStorage.getItem("token");
 
       if (!token) {
-        setError("Unauthorized: Please log in to access projects.");
+        setError("Unauthorized: Please log in.");
         setLoading(false);
         return;
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/projects", {
-          method: "GET",
+        const response = await fetch("http://localhost:5000/api/all-data", {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ Send the token
+            Authorization: `Bearer ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch projects: " + response.statusText);
+          throw new Error("Failed to fetch dashboard data.");
         }
 
         const data = await response.json();
-        setProjects(data);
+        setRecentProjects(data.recentProjects);
+        setCompletedTasks(data.completedTasks);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -46,29 +44,51 @@ const Dashboard = () => {
       }
     };
 
-    fetchProjects();
+    fetchDashboardData();
   }, []);
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Dashboard</h1>
-      <h1><Link to={'/settings'}>settings</Link></h1>
-      <h1><Link to={'/projects'}>projects</Link></h1>
-      <button onClick={createProjects}>create new project</button>
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+
+      <div className="flex gap-4 mb-4">
+        <Link to="/settings">Settings</Link>
+        <Link to="/projects">Projects</Link>
+        <button onClick={createProjects}>Create New Project</button>
+      </div>
 
       {loading ? (
-        <p>Loading projects...</p>
+        <p>Loading...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : projects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
-          ))}
-        </div>
       ) : (
-        <p>No projects found. Start by creating a new project!</p>
+        <>
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Recent Projects</h2>
+            {recentProjects.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recentProjects.map((project) => (
+                  <ProjectCard key={project._id} project={project} />
+                ))}
+              </div>
+            ) : (
+              <p>No recent projects.</p>
+            )}
+          </section>
 
+          <section>
+            <h2 className="text-xl font-semibold mb-2">Recently Completed Tasks</h2>
+            {completedTasks.length > 0 ? (
+              <ul className="list-disc list-inside">
+                {completedTasks.map((task) => (
+                  <li key={task._id}>{task.title}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No completed tasks.</p>
+            )}
+          </section>
+        </>
       )}
     </div>
   );

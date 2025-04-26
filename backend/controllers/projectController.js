@@ -1,4 +1,5 @@
 const Project = require("../models/Project");
+const Task = require("../models/Task");
 const User = require("../models/User");
 
 // 🔹 Create a new project
@@ -27,7 +28,6 @@ exports.createProject = async (req, res) => {
     }
 };
 
-
 // 🔹 Get all projects for the logged-in user
 exports.getProjects = async (req, res) => {
     try {
@@ -43,31 +43,91 @@ exports.getProjects = async (req, res) => {
     }
 };
 
-// 🔹 Get a single project by ID (with populated tasks and subtasks)
+// 🔹 Get a single project by ID
 exports.getOnlyProject = async (req, res) => {
     try {
-      const { id } = req.params;
-  
-      const project = await Project.findOne({ _id: id, createdBy: req.userId })
-        .populate({
-          path: "tasks",
-          populate: {
-            path: "subtasks", // ✅ This works if Task schema has subtasks as ObjectId refs
-          },
-        });
-  
-      if (!project) {
-        return res.status(404).json({ message: "Project not found or unauthorized!" });
-      }
-  
-      res.status(200).json(project);
-    } catch (error) {
-      console.error("❌ Error fetching project:", error.message);
-      res.status(500).json({ message: "Error fetching project", error: error.message });
-    }
-  };
-  
+        const { id } = req.params;
 
+        const project = await Project.findOne({ _id: id, createdBy: req.userId })
+            .populate({
+                path: "tasks",
+                populate: {
+                    path: "subtasks",
+                },
+            });
+
+        if (!project) {
+            return res.status(404).json({ message: "Project not found or unauthorized!" });
+        }
+
+        res.status(200).json(project);
+    } catch (error) {
+        console.error("❌ Error fetching project:", error.message);
+        res.status(500).json({ message: "Error fetching project", error: error.message });
+    }
+};
+
+// 🔹 Get full project details (NEW API)
+exports.getFullProjectDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const project = await Project.findOne({ _id: id, createdBy: req.userId })
+            .populate({
+                path: "tasks",
+                populate: {
+                    path: "subtasks",
+                },
+            });
+
+        if (!project) {
+            return res.status(404).json({ message: "Project not found or unauthorized!" });
+        }
+
+        let totalTasks = 0;
+        let completedTasks = 0;
+
+        const tasks = project.tasks.map(task => {
+            totalTasks += 1;
+            if (task.completed) completedTasks += 1;
+
+            const subtasks = task.subtasks.map(subtask => {
+                totalTasks += 1;
+                if (subtask.completed) completedTasks += 1;
+            
+                return subtask; // Return full subtask document
+            });
+            
+            
+
+            return {
+                ...task.toObject(), // Spread full task document
+                subtasks,
+            };
+            
+        });
+
+        const completeness = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        res.status(200).json({
+            project: {
+                id: project._id,
+                title: project.title,
+                description: project.description,
+                createdAt: project.createdAt,
+                dueDate: project.dueDate,
+                tags: project.tags,
+                completeness,
+                totalTasks,
+                tasks,
+            }
+        });
+
+    } catch (error) {
+        console.error("❌ Error fetching full project details:", error.message);
+        res.status(500).json({ message: "Failed to fetch full project details", error: error.message });
+    }
+};
 
 // 🔹 Delete a project
 exports.deleteProject = async (req, res) => {

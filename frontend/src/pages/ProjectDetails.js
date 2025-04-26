@@ -1,333 +1,112 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import "../styles/ProjectDetails.css";
+import React, { useEffect, useState } from 'react';
+import ProjectHeader from '../projectComponents/ProjectHeader';
+import TaskForm from '../projectComponents/TaskForm';
+import TaskList from '../projectComponents/TaskList';
+import { useParams } from 'react-router-dom';
 
 const ProjectDetails = () => {
-  const { id } = useParams();
+  const { id: projectId } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [taskName, setTaskName] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [taskStatus, setTaskStatus] = useState("pending");
-  const [editingTaskId, setEditingTaskId] = useState(null);
-  const [subtaskFormVisible, setSubtaskFormVisible] = useState({});
-  const [subtaskInputs, setSubtaskInputs] = useState({});
-  const token = localStorage.getItem("token");
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Trigger re-fetching project
+  const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchProjectDetails = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/projects/${id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error("Authentication token missing");
+
+        const response = await fetch(`http://localhost:5000/api/projects/${projectId}/details`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch project details');
+        }
 
         const data = await response.json();
-        setProject(data);
-      } catch (error) {
-        console.error("Error fetching project:", error);
-      } finally {
+        setProject(data.project);
+        setLoading(false);
+      } catch (err) {
+        setError('Error fetching project details: ' + err.message);
         setLoading(false);
       }
     };
-    fetchProject();
-  }, [id, token]);
 
-  const handleAddOrUpdateTask = async (e) => {
-    e.preventDefault();
-    const url = editingTaskId
-      ? `http://localhost:5000/api/tasks/${editingTaskId}`
-      : `http://localhost:5000/api/tasks/projects/${id}/tasks`;
+    fetchProjectDetails();
+  }, [projectId, refreshTrigger]);
 
-    const method = editingTaskId ? "PUT" : "POST";
-
+  // Update task
+  const handleTaskUpdate = async (updatedTask) => {
     try {
-      const response = await fetch(url, {
-        method,
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/tasks/${updatedTask._id}`, {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          title: taskName,
-          deadline: dueDate,
-          status: taskStatus,
-        }),
+        body: JSON.stringify(updatedTask),
       });
 
-      const updatedTask = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
 
-      setProject((prev) => ({
-        ...prev,
-        tasks: editingTaskId
-          ? prev.tasks.map((t) =>
-              t._id === editingTaskId ? updatedTask.task || updatedTask : t
-            )
-          : [...(prev.tasks || []), updatedTask],
-      }));
-
-      setTaskName("");
-      setDueDate("");
-      setTaskStatus("pending");
-      setEditingTaskId(null);
-      setShowForm(false);
-    } catch (error) {
-      console.error("Error saving task:", error);
+      await response.json();
+      refreshProjectDetails();
+    } catch (err) {
+      setError('Error updating task: ' + err.message);
     }
   };
 
-  const handleEditTask = (task) => {
-    setTaskName(task.title);
-    setDueDate(task.deadline?.split("T")[0] || "");
-    setTaskStatus(task.status || "pending");
-    setEditingTaskId(task._id);
-    setShowForm(true);
-  };
-
-  const handleDeleteTask = async (taskId) => {
+  // Delete task
+  const handleTaskDelete = async (taskId) => {
     try {
-      await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setProject((prev) => ({
-        ...prev,
-        tasks: prev.tasks.filter((task) => task._id !== taskId),
-      }));
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
-
-  const handleSubtaskInputChange = (taskId, field, value) => {
-    setSubtaskInputs((prev) => ({
-      ...prev,
-      [taskId]: {
-        ...prev[taskId],
-        [field]: value,
-      },
-    }));
-  };
-
-  const handleAddSubtask = async (parentTaskId) => {
-    const input = subtaskInputs[parentTaskId];
-    if (!input?.title) return;
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/tasks`, {
-        method: "POST",
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          title: input.title,
-          deadline: input.deadline,
-          status: input.status || "pending",
-          parentTaskId,
-          projectId: id,
-        }),
       });
 
-      const newSubtask = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to delete task');
+      }
 
-      setProject((prev) => ({
-        ...prev,
-        tasks: prev.tasks.map((task) =>
-          task._id === parentTaskId
-            ? { ...task, subtasks: [...(task.subtasks || []), newSubtask] }
-            : task
-        ),
-      }));
-
-      setSubtaskInputs((prev) => ({ ...prev, [parentTaskId]: {} }));
-      setSubtaskFormVisible((prev) => ({ ...prev, [parentTaskId]: false }));
-    } catch (error) {
-      console.error("Error creating subtask:", error);
+      refreshProjectDetails();
+    } catch (err) {
+      setError('Error deleting task: ' + err.message);
     }
   };
 
-  const handleDeleteSubtask = async (subtaskId, parentTaskId) => {
-    try {
-      await fetch(`http://localhost:5000/api/tasks/${subtaskId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setProject((prev) => ({
-        ...prev,
-        tasks: prev.tasks.map((task) =>
-          task._id === parentTaskId
-            ? {
-                ...task,
-                subtasks: task.subtasks.filter((st) => st._id !== subtaskId),
-              }
-            : task
-        ),
-      }));
-    } catch (error) {
-      console.error("Error deleting subtask:", error);
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (!project) return <p>Project not found.</p>;
+  if (loading) return <div>Loading project details...</div>;
+  if (!project) return <div>Project not found.</div>;
 
   return (
-    <div className="project-details-container">
-      <h1>{project.title}</h1>
-      <p>
-        <strong>Description:</strong> {project.description}
-      </p>
-      <p>
-        <strong>Due Date:</strong>{" "}
-        {project.dueDate
-          ? new Date(project.dueDate).toLocaleDateString()
-          : "None"}
-      </p>
+    <div className="project-details p-4">
+      {error && <div className="text-red-600 mb-4">{error}</div>}
 
-      <button onClick={() => setShowForm(true)}>Add Task</button>
+      {/* Project Info */}
+      <ProjectHeader project={project} />
 
-      <h3>Tasks</h3>
-      <ul>
-        {project.tasks?.map((task) => (
-          <li key={task._id}>
-            <strong>{task.title}</strong> — <em>{task.status}</em>
-            {task.deadline && (
-              <> — Due: {new Date(task.deadline).toLocaleDateString()}</>
-            )}
-            <div className="task-actions">
-              <button onClick={() => handleEditTask(task)}>Edit</button>
-              <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
-              <button
-                onClick={() =>
-                  setSubtaskFormVisible((prev) => ({
-                    ...prev,
-                    [task._id]: !prev[task._id],
-                  }))
-                }
-              >
-                {subtaskFormVisible[task._id] ? "Cancel" : "Add Subtask"}
-              </button>
-            </div>
-            {subtaskFormVisible[task._id] && (
-              <div className="subtask-form">
-                <input
-                  type="text"
-                  placeholder="Subtask name"
-                  value={subtaskInputs[task._id]?.title || ""}
-                  onChange={(e) =>
-                    handleSubtaskInputChange(task._id, "title", e.target.value)
-                  }
-                />
-                <input
-                  type="date"
-                  value={subtaskInputs[task._id]?.deadline || ""}
-                  onChange={(e) =>
-                    handleSubtaskInputChange(
-                      task._id,
-                      "deadline",
-                      e.target.value
-                    )
-                  }
-                />
-                <select
-                  value={subtaskInputs[task._id]?.status || "pending"}
-                  onChange={(e) =>
-                    handleSubtaskInputChange(task._id, "status", e.target.value)
-                  }
-                >
-                  <option value="pending">Pending</option>
-                  <option value="in progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-                <button onClick={() => handleAddSubtask(task._id)}>
-                  Save Subtask
-                </button>
-              </div>
-            )}
-            {task.subtasks?.length > 0 && (
-              <ul>
-                {task.subtasks.map((sub) => (
-                  <li key={sub._id}>
-                    ↳ {sub.title} — <em>{sub.status}</em>
-                    <button
-                      onClick={() => handleDeleteSubtask(sub._id, task._id)}
-                    >
-                      Delete
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
+      {/* Task Creation */}
+      <TaskForm projectId={projectId} onTaskCreated={refreshProjectDetails} />
 
-      {showForm && (
-        <div className="form-popup">
-          <form className="form-container" onSubmit={handleAddOrUpdateTask}>
-            <h1>{editingTaskId ? "Edit Task" : "Add Task"}</h1>
-
-            <label>
-              <b>Task Name</b>
-            </label>
-            <input
-              type="text"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              required
-            />
-
-            <label>
-              <b>Due Date</b>
-            </label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-            />
-
-            <label>
-              <b>Status</b>
-            </label>
-            <select
-              value={taskStatus}
-              onChange={(e) => setTaskStatus(e.target.value)}
-              required
-            >
-              <option value="pending">Pending</option>
-              <option value="in progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-
-            <button type="submit" className="btn">
-              {editingTaskId ? "Update" : "Add"}
-            </button>
-            <button
-              type="button"
-              className="btn cancel"
-              onClick={() => {
-                setShowForm(false);
-                setEditingTaskId(null);
-                setTaskName("");
-                setDueDate("");
-                setTaskStatus("pending");
-              }}
-            >
-              Cancel
-            </button>
-          </form>
-        </div>
-      )}
+      {/* Task List */}
+      <h3 className="text-2xl font-bold my-4">Tasks</h3>
+      <TaskList
+        tasks={project.tasks || []}
+        onTaskUpdated={handleTaskUpdate}
+        onTaskDeleted={handleTaskDelete}
+      />
     </div>
   );
 };

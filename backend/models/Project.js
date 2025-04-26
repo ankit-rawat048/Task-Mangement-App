@@ -16,15 +16,30 @@ const projectSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
+    createdate: {
+      type: Date,
+      default: Date.now // auto-create if not provided
+    },
     dueDate: {
       type: Date,
       default: null
+    },
+    status: {
+      type: String,
+      enum: ["pending", "in progress", "completed"],
+      default: "pending"
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
     },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
     tasks: [
       {
         type: mongoose.Schema.Types.ObjectId,
