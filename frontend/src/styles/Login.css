@@ -6,19 +6,22 @@
 }
 .login-container {
     display: flex;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #6a11cb, #2575fc);
+    background: linear-gradient(to right, #938c9b, #abb9d1);
   }
   
   .login-box {
     background: #fff;
     padding: 2rem;
-    border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 350px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
   
   .login-title {

@@ -1,9 +1,10 @@
 /* Settings Page Styles */
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+body {
+  padding: 24px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
   
 .settings-container {
     display: flex;

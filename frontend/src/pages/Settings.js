@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from '../components/Navbar';
 
 const Settings = () => {
   const [error, setError] = useState("");
@@ -88,6 +89,7 @@ const Settings = () => {
 
   return (
     <div className="settings-container">
+      <Navbar />
       <h2>Settings</h2>
       {error && <p className="error-message">{error}</p>}
       <button onClick={handleDeleteAccount} className="delete-button">Delete Account</button>

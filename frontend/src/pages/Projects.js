@@ -1,11 +1,16 @@
 // src/pages/Projects.js
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All");
+  const [sort, setSort] = useState("name");
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 9;
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -40,21 +45,70 @@ const Projects = () => {
     }
   }, [token]);
 
+  // Search functionality
+  const filteredProjects = projects.filter((project) =>
+    project.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Sorting functionality
+  const sortedProjects = filteredProjects.sort((a, b) => {
+    if (sort === "name") {
+      return a.title.localeCompare(b.title);
+    }
+    return 0;
+  });
+
+  // Pagination
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = sortedProjects.slice(indexOfFirstProject, indexOfLastProject);
+
+  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="projects-container">
       <div className="projects-header">
-        <h1>Your Projects</h1>
-        <Link to="/create-project" className="create-btn">
-          + Create Project
-        </Link>
+        <Navbar />
       </div>
 
+      {/* Search, Filter, Sort */}
+      <div className="projects-filters">
+        <input
+          type="text"
+          placeholder="Search Projects..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+        <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
+          <option value="All">All Projects</option>
+          <option value="Completed">Completed Projects</option>
+          <option value="In Progress">In Progress</option>
+        </select>
+        <select value={sort} onChange={(e) => setSort(e.target.value)} className="sort-dropdown">
+          <option value="name">Sort by Name</option>
+          <option value="date">Sort by Date</option>
+        </select>
+      </div>
+
+      {/* Create New Project Button */}
+      <div className="create-project-btn">
+        <button className="create-btn" onClick={() => alert("Redirecting to Create Project Page")}>
+          + Create New Project
+        </button>
+      </div>
+
+      {/* Loading & Projects Grid */}
       {loading ? (
         <p className="loading-text">Loading projects...</p>
       ) : (
         <div className="projects-grid">
-          {projects.length > 0 ? (
-            projects.map((project) => (
+          {currentProjects.length > 0 ? (
+            currentProjects.map((project) => (
               <ProjectCard key={project._id} project={project} />
             ))
           ) : (
@@ -62,6 +116,33 @@ const Projects = () => {
           )}
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="pagination">
+        <button
+          onClick={() => handlePagination(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="pagination-btn"
+        >
+          Prev
+        </button>
+        {[...Array(totalPages).keys()].map((number) => (
+          <button
+            key={number + 1}
+            onClick={() => handlePagination(number + 1)}
+            className={`pagination-btn ${currentPage === number + 1 ? "active" : ""}`}
+          >
+            {number + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => handlePagination(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="pagination-btn"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

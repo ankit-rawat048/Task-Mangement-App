@@ -1,0 +1,152 @@
+body {
+  padding: 24px;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation Bar */
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-links a {
+  color: #555;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #007bff;
+}
+
+/* Create Button */
+.create-btn {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-btn:hover {
+  background-color: #0056b3;
+}
+
+.create-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+/* Content Sections */
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.dashboard-section {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Project Grid */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Task List */
+.task-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #555;
+}
+
+.task-list li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* Empty or Status Messages */
+.status-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.loading {
+  font-size: 18px;
+  color: #666;
+  animation: pulse 1.5s infinite;
+}
+
+.error {
+  font-size: 18px;
+  color: #d9534f;
+}
+
+.empty-message {
+  color: #999;
+  font-size: 16px;
+}
+
+/* Pulse Animation for Loading */
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-content {
+    gap: 24px;
+    padding: 0 16px;
+  }
+
+  .dashboard-section {
+    padding: 16px;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}

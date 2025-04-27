@@ -3,6 +3,7 @@ import ProjectHeader from '../projectComponents/ProjectHeader';
 import TaskForm from '../projectComponents/TaskForm';
 import TaskList from '../projectComponents/TaskList';
 import { useParams } from 'react-router-dom';
+import '../styles/ProjectDetails.css';
 
 const ProjectDetails = () => {
   const { id: projectId } = useParams();

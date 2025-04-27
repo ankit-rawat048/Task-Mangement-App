@@ -53,18 +53,82 @@ const CreateProject = () => {
     }
   };
 
-  return (
-    <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Create a New Project</h1>
+  const styles = {
+    container: {
+      padding: "24px",
+      backgroundColor: "#ffffff",
+      borderRadius: "8px",
+      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+      maxWidth: "600px",
+      margin: "0 auto"
+    },
+    heading: {
+      fontSize: "24px",
+      fontWeight: "bold",
+      marginBottom: "24px",
+      textAlign: "center",
+      color: "#333"
+    },
+    form: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "16px"
+    },
+    input: {
+      width: "100%",
+      padding: "12px",
+      border: "1px solid #ddd",
+      borderRadius: "6px",
+      fontSize: "16px",
+      transition: "border-color 0.3s ease"
+    },
+    inputFocus: {
+      borderColor: "#007bff",
+      outline: "none"
+    },
+    button: {
+      padding: "12px",
+      backgroundColor: "#007bff",
+      color: "white",
+      fontSize: "16px",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      transition: "background-color 0.3s ease"
+    },
+    buttonHover: {
+      backgroundColor: "#0056b3"
+    },
+    buttonDisabled: {
+      backgroundColor: "#cccccc",
+      cursor: "not-allowed"
+    },
+    successMessage: {
+      color: "#28a745",
+      fontSize: "16px",
+      textAlign: "center",
+      marginTop: "16px"
+    },
+    errorMessage: {
+      color: "#dc3545",
+      fontSize: "16px",
+      textAlign: "center",
+      marginTop: "16px"
+    }
+  };
 
-      <form onSubmit={createNewProject} className="space-y-4">
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Create a New Project</h1>
+
+      <form onSubmit={createNewProject} style={styles.form}>
         <input
           type="text"
           value={title}
           placeholder="Project Title"
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full px-4 py-2 border rounded"
+          style={styles.input}
         />
 
         <textarea
@@ -72,7 +136,7 @@ const CreateProject = () => {
           placeholder="Project Description"
           onChange={(e) => setDescription(e.target.value)}
           required
-          className="w-full px-4 py-2 border rounded"
+          style={styles.input}
         ></textarea>
 
         <input
@@ -80,27 +144,31 @@ const CreateProject = () => {
           value={tags}
           placeholder="Tags (e.g. High Priority)"
           onChange={(e) => setTags(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
+          style={styles.input}
         />
 
         <input
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
+          style={styles.input}
         />
 
         <button
           type="submit"
-          className={`w-full bg-blue-500 text-white px-4 py-2 rounded ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+          style={{
+            ...styles.button,
+            ...(loading ? styles.buttonDisabled : {}),
+            ...(loading ? {} : styles.buttonHover)
+          }}
           disabled={loading}
         >
           {loading ? "Creating..." : "Create Project"}
         </button>
       </form>
 
-      {success && <p className="text-green-600 mt-4">✅ Project created successfully! Redirecting...</p>}
-      {error && <p className="text-red-600 mt-4">❌ {error}</p>}
+      {success && <p style={styles.successMessage}>✅ Project created successfully! Redirecting...</p>}
+      {error && <p style={styles.errorMessage}>❌ {error}</p>}
     </div>
   );
 };

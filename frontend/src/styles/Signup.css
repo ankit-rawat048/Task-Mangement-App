@@ -7,19 +7,22 @@
 
 .signup-container {
     display: flex;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #ff758c, #ff7eb3);
+    background: linear-gradient(to right, #b0a7a8, #fffeff);
   }
   
   .signup-box {
     background: #fff;
     padding: 2rem;
-    border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 350px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
   
   .signup-title {

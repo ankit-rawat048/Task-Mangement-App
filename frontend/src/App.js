@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateProject from "./pages/CreateProject";
 import ProjectDetails from "./pages/ProjectDetails";
 import Projects from "./pages/Projects";
+import HowTo from "./pages/HowTo";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/createproject" element={<CreateProject />}/>
         <Route path="/projectdetails/:id" element={<ProjectDetails />}/>
         <Route path="/projects" element={<Projects />}/>
+        <Route path="/howto" element={<HowTo />}/>
       </Routes>
     </Router>
   );

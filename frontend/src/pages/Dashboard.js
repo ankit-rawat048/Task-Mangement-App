@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "../styles/Dashboard.css"; // Import CSS
+import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
   const [recentProjects, setRecentProjects] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [username, setUsername] = useState(""); // New state for username
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const createProjects = () => navigate('/createproject');
+  const createProjects = () => navigate("/createproject");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -23,7 +26,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/all-data", {
+        const response = await fetch("http://localhost:5000/api/user", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -35,8 +38,15 @@ const Dashboard = () => {
         }
 
         const data = await response.json();
-        setRecentProjects(data.recentProjects);
-        setCompletedTasks(data.completedTasks);
+
+        // Set the username, recent projects, and completed tasks from API response
+        setUsername(data.username);
+        setRecentProjects(data.projects); // Assuming 'projects' contains recent projects
+        setCompletedTasks(
+          data.projects
+            .flatMap((project) => project.tasks)
+            .filter((task) => task.status === "completed")
+        );
       } catch (err) {
         setError(err.message);
       } finally {
@@ -48,47 +58,57 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+    <div className="dashboard-container">
+      <Navbar />
 
-      <div className="flex gap-4 mb-4">
-        <Link to="/settings">Settings</Link>
-        <Link to="/projects">Projects</Link>
-        <button onClick={createProjects}>Create New Project</button>
-      </div>
-
+      {/* Content */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="status-message">
+          <p className="loading">Loading...</p>
+        </div>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <div className="status-message">
+          <p className="error">{error}</p>
+        </div>
       ) : (
-        <>
-          <section className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Recent Projects</h2>
-            {recentProjects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="dashboard-content">
+          {/* User Info */}
+          <section className="user-info">
+            <h1>Welcome, {username}!</h1>
+            <h2>start your project from here </h2>
+            <button onClick={createProjects} className="create-btn">
+              + Create Project
+            </button>
+          </section>
+
+          {/* Recent Projects */}
+          <section className="dashboard-section">
+            <h2 className="section-title">Recent Projects</h2>
+            {Array.isArray(recentProjects) && recentProjects.length > 0 ? (
+              <div className="project-grid">
                 {recentProjects.map((project) => (
                   <ProjectCard key={project._id} project={project} />
                 ))}
               </div>
             ) : (
-              <p>No recent projects.</p>
+              <p className="empty-message">No recent projects found.</p>
             )}
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Recently Completed Tasks</h2>
-            {completedTasks.length > 0 ? (
-              <ul className="list-disc list-inside">
+          {/* Completed Tasks */}
+          <section className="dashboard-section">
+            <h2 className="section-title">Recently Completed Tasks</h2>
+            {Array.isArray(completedTasks) && completedTasks.length > 0 ? (
+              <ul className="task-list">
                 {completedTasks.map((task) => (
                   <li key={task._id}>{task.title}</li>
                 ))}
               </ul>
             ) : (
-              <p>No completed tasks.</p>
+              <p className="empty-message">No completed tasks yet.</p>
             )}
           </section>
-        </>
+        </div>
       )}
     </div>
   );

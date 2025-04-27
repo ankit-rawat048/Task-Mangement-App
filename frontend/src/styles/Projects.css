@@ -1,3 +1,10 @@
+body {
+  padding: 24px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+
 .projects-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -43,5 +50,83 @@
     color: #777;
     margin-top: 20px;
     text-align: center;
+  }
+
+  
+  .projects-container {
+    padding: 20px;
+  }
+  
+  .projects-header {
+    margin-bottom: 20px;
+  }
+  
+  .projects-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar, .filter-dropdown, .sort-dropdown {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .create-project-btn {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .create-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .create-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+  }
+  
+  .pagination-btn {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .pagination-btn.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .pagination-btn:disabled {
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+  }
+  
+  .loading-text {
+    text-align: center;
+  }
+  
+  .no-projects {
+    text-align: center;
+    font-size: 1.2em;
   }
   
