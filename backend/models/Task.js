@@ -42,6 +42,11 @@ const taskSchema = new mongoose.Schema(
         ref: "Task"
       }
     ],
+    parentTask: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task",
+      default: null
+    },
     dependsOn: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -58,17 +63,15 @@ const taskSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
-    parentTask: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Task",
-      default: null
-    },
     notes: {
       type: String,
-      default: ''
+      default: "",
+      trim: true
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true // Automatically adds createdAt and updatedAt
+  }
 );
 
 module.exports = mongoose.model("Task", taskSchema);

@@ -4,18 +4,15 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [tags, setTags] = useState([]);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem('token');
-    if (!token) {
-      setError('You must be logged in to create a task.');
-      return;
-    }
+    if (!token) return setError('You must be logged in.');
 
     if (!title.trim() || !description.trim()) {
       setError('Title and description are required.');
@@ -25,15 +22,15 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
     const taskData = {
       title,
       description,
-      status: 'pending',
       deadline,
-      projectId,
+      status,
       priority,
       tags,
+      projectId,
     };
 
     try {
-      const response = await fetch(`http://localhost:5000/api/tasks/projects/${projectId}/tasks`, {
+      const res = await fetch(`http://localhost:5000/api/tasks/projects/${projectId}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,65 +39,52 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
         body: JSON.stringify(taskData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create task');
-      }
+      if (!res.ok) throw new Error((await res.json()).message || 'Failed to create task');
 
-      // Success
-      await response.json();
-      onTaskCreated(); // ✅ Just trigger refresh
+      await res.json();
+      onTaskCreated();
 
       // Reset form
       setTitle('');
       setDescription('');
       setDeadline('');
+      setStatus('');
       setPriority('');
       setTags([]);
       setError(null);
-
     } catch (err) {
       setError('Error creating task: ' + err.message);
-      console.error('Error creating task:', err);
     }
   };
 
   return (
-    <div>
+    <div className="task-form-container">
       <form onSubmit={handleSubmit}>
         <h3>Create Task</h3>
 
-        <label>
-          Title
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+        <label>Title
+          <input value={title} onChange={e => setTitle(e.target.value)} required />
         </label>
 
-        <label>
-          Description
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
+        <label>Description
+          <textarea value={description} onChange={e => setDescription(e.target.value)} required />
         </label>
 
-        <label>
-          Deadline
-          <input
-            type="date"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
-          />
+        <label>Deadline
+          <input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
         </label>
 
-        <label>
-          Priority
-          <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+        <label>Status
+          <select value={status} onChange={e => setStatus(e.target.value)}>
+            <option value="">Select</option>
+            <option value="pending">Pending</option>
+            <option value="in progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </label>
+
+        <label>Priority
+          <select value={priority} onChange={e => setPriority(e.target.value)}>
             <option value="">Select</option>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -108,26 +92,15 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
           </select>
         </label>
 
-        <label>
-          Tags (comma-separated)
-          <input
-            type="text"
-            value={tags.join(', ')}
-            onChange={(e) =>
-              setTags(
-                e.target.value
-                  .split(',')
-                  .map(tag => tag.trim())
-                  .filter(tag => tag !== '')
-              )
-            }
-          />
+        <label>Tags (comma-separated)
+          <input value={tags.join(', ')} onChange={e =>
+            setTags(e.target.value.split(',').map(tag => tag.trim()).filter(Boolean))
+          } />
         </label>
 
         <button type="submit">Create Task</button>
+        {error && <p className="error">{error}</p>}
       </form>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 };

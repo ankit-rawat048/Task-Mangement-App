@@ -68,3 +68,78 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/frontend
+│
+├── /public
+│   ├── index.html            # Main HTML file
+│   └── /assets               # Images, icons, and static assets
+│
+├── /src
+│   ├── /components                 
+│   │   ├── Navbar.js     
+│   │   ├── ProjectCard.js       
+│   │   └── ProjectEdit.js   
+│   │   └── ProtectedRoute.js   
+│   │   └── Sidebar.js   
+│   │   └── TaskCard.js   
+│   │   └── TaskList.js   
+│   │
+│   ├── /projectComponents           
+│   │   ├── /ProjectHeader    
+│   │   ├── /TaskItem         
+│   │   ├── /TaskList         
+│   │   ├── /TaskForm         
+│   │   ├── /SubtaskForm      
+│   │   └── /SubtaskItem
+│   │
+│   ├── /pages                
+│   │   ├── ProjectDetails.js 
+│   │   ├── Dashboard.js      
+│   │   └── Login.js          
+│   │   └── CreateProject.js          
+│   │   └── HowTo.js          
+│   │   └── ProjectDetails.js          
+│   │   └── Projects.js          
+│   │   └── Settings.js          
+│   │   └── Signup.js          
+│   │
+│   │
+│   ├── /contexts             # Contexts for global state management
+│   │   ├── AuthContext.js    # Authentication context
+│   │   ├── TaskContext.js    # Task-related state management
+│   │   └── ProjectContext.js # Project-related state management
+│   │
+│   ├── /hooks                # Custom hooks
+│   │   ├── useAuth.js        # Custom hook for authentication
+│   │   ├── useTasks.js       # Custom hook for task-related logic
+│   │   └── useProjects.js    # Custom hook for project-related logic
+│   │
+│   ├── /utils                # Utility functions and helpers
+│   │   ├── dateUtils.js      # Date formatting functions
+│   │   └── validation.js     # Validation functions (e.g., form validation)
+│   │
+│   ├── App.js                # Root component
+│   ├── index.js              # Entry point for React app
+│   └── router.js             # Routing setup (if needed)
+│
+└── package.json              # Project dependencies and scripts

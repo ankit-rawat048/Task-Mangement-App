@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import ProjectHeader from '../projectComponents/ProjectHeader';
-import TaskForm from '../projectComponents/TaskForm';
-import TaskList from '../projectComponents/TaskList';
-import { useParams } from 'react-router-dom';
-import '../styles/ProjectDetails.css';
+import React, { useEffect, useState } from "react";
+import ProjectHeader from "../projectComponents/ProjectHeader";
+import TaskForm from "../projectComponents/TaskForm";
+import TaskList from "../projectComponents/TaskList";
+import { useParams } from "react-router-dom";
+import '../styles/csspages/ProjectDetails.css';
+
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const ProjectDetails = () => {
   const { id: projectId } = useParams();
@@ -11,31 +13,27 @@ const ProjectDetails = () => {
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
-  // Trigger re-fetching project
+  const handleOpenForm = () => setShowForm(true);
+  const handleCloseForm = () => setShowForm(false);
   const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error("Authentication token missing");
-
-        const response = await fetch(`http://localhost:5000/api/projects/${projectId}/details`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE}/api/projects/${projectId}/details`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch project details');
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch project details");
         const data = await response.json();
         setProject(data.project);
-        setLoading(false);
       } catch (err) {
-        setError('Error fetching project details: ' + err.message);
+        setError("Error fetching project details: " + err.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -43,68 +41,79 @@ const ProjectDetails = () => {
     fetchProjectDetails();
   }, [projectId, refreshTrigger]);
 
-  // Update task
   const handleTaskUpdate = async (updatedTask) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/tasks/${updatedTask._id}`, {
-        method: 'PUT',
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE}/api/tasks/${updatedTask._id}`, {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedTask),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
+      if (!response.ok) throw new Error("Failed to update task");
 
-      await response.json();
       refreshProjectDetails();
     } catch (err) {
-      setError('Error updating task: ' + err.message);
+      setError("Error updating task: " + err.message);
     }
   };
 
-  // Delete task
   const handleTaskDelete = async (taskId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete task');
-      }
+      if (!response.ok) throw new Error("Failed to delete task");
 
       refreshProjectDetails();
     } catch (err) {
-      setError('Error deleting task: ' + err.message);
+      setError("Error deleting task: " + err.message);
     }
   };
 
-  if (loading) return <div>Loading project details...</div>;
-  if (!project) return <div>Project not found.</div>;
+  if (loading) return <div className="loading">Loading project details...</div>;
+  if (!project) return <div className="not-found">Project not found.</div>;
 
   return (
-    <div className="project-details p-4">
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+    <div className="project-details">
+      {error && <div className="error">{error}</div>}
 
-      {/* Project Info */}
       <ProjectHeader project={project} />
 
-      {/* Task Creation */}
-      <TaskForm projectId={projectId} onTaskCreated={refreshProjectDetails} />
+      {/* 🔄 Show project progress visually
+      <div className="project-progress">
+        <label>Progress: </label>
+        <progress value={project.progress || 0} max="100" />
+        <span>{Math.round(project.progress || 0)}%</span>
+      </div> */}
 
-      {/* Task List */}
-      <h3 className="text-2xl font-bold my-4">Tasks</h3>
+      <button className="add-task-button" onClick={handleOpenForm}>
+        ➕ Add Task
+      </button>
+
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <TaskForm
+              projectId={projectId}
+              onClose={handleCloseForm}
+              onTaskCreated={refreshProjectDetails}
+            />
+          </div>
+        </div>
+      )}
+
+      <h3 className="task-heading">Tasks</h3>
+
       <TaskList
-        tasks={project.tasks || []}
+        tasks={(project.tasks || []).filter(task => !task.parentTask)}
+        projectId={projectId}
         onTaskUpdated={handleTaskUpdate}
         onTaskDeleted={handleTaskDelete}
       />

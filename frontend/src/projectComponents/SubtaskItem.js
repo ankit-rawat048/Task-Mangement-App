@@ -1,10 +1,28 @@
 import React from 'react';
-import axios from 'axios';
 
 const SubtaskItem = ({ subtask, onUpdate }) => {
   const deleteSubtask = async () => {
-    await axios.delete(`/api/tasks/${subtask._id}`);
-    onUpdate();
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`http://localhost:5000/api/tasks/${subtask._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete subtask');
+      }
+
+      onUpdate();
+    } catch (error) {
+      console.error('Error deleting subtask:', error);
+    }
   };
 
   return (

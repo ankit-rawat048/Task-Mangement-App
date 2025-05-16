@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import Navbar from "../components/Navbar";
+import '../styles/csspages/Projects.css';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);

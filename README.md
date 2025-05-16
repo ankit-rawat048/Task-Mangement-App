@@ -153,3 +153,16 @@ put http://localhost:5000/api/tasks/:id  to update a subtask
 
 delete http://localhost:5000/api/tasks/:id  to delete a sub tasks
 get http://localhost:5000/api/tasks/:id to get subtask details
+
+
+
+
+
+
+
+ + task-name       details-icon  add-note-icon update-task/delete-task +add-subtask
+
+       subtask-name       details-icon  add-note-icon update-task/delete-task 
+       subtask-name       details-icon  add-note-icon update-task/delete-task 
+       subtask-name       details-icon  add-note-icon update-task/delete-task 
+       subtask-name       details-icon  add-note-icon update-task/delete-task 

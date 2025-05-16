@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { useNavigate } from "react-router-dom";
-import "../styles/Dashboard.css"; // Import CSS
 import Navbar from "../components/Navbar";
+import "../styles/csspages/Dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -74,39 +74,98 @@ const Dashboard = () => {
         <div className="dashboard-content">
           {/* User Info */}
           <section className="user-info">
-            <h1>Welcome, {username}!</h1>
-            <h2>start your project from here </h2>
-            <button onClick={createProjects} className="create-btn">
-              + Create Project
-            </button>
-          </section>
+            <div className="intro">
+              <h1>Welcome, {username}!</h1>
+              <h2>start your project from here </h2>
+              <button onClick={createProjects} className="create-btn">
+                + Create Project
+              </button>
+            </div>
 
-          {/* Recent Projects */}
-          <section className="dashboard-section">
-            <h2 className="section-title">Recent Projects</h2>
-            {Array.isArray(recentProjects) && recentProjects.length > 0 ? (
-              <div className="project-grid">
-                {recentProjects.map((project) => (
-                  <ProjectCard key={project._id} project={project} />
-                ))}
+            <div className="graph">
+              <h2>Project Overview</h2>
+
+              <div className="chart-container">
+                <div className="chart-row">
+                  <div className="chart-label">Projects</div>
+                  <div
+                    className="chart-bar"
+                    style={{
+                      width: `${(recentProjects.length / 50) * 100}%`,
+                    }}
+                  ></div>
+                  <div className="chart-value">{recentProjects.length}</div>
+                </div>
+
+                <div className="chart-row">
+                  <div className="chart-label">Tasks</div>
+                  <div
+                    className="chart-bar"
+                    style={{
+                      width: `${
+                        (recentProjects.reduce(
+                          (acc, p) => acc + (p.tasks ? p.tasks.length : 0),
+                          0
+                        ) /
+                          50) *
+                        100
+                      }%`,
+                    }}
+                  ></div>
+                  <div className="chart-value">
+                    {recentProjects.reduce(
+                      (acc, p) => acc + (p.tasks ? p.tasks.length : 0),
+                      0
+                    )}
+                  </div>
+                </div>
+
+                <div className="chart-row">
+                  <div className="chart-label">Completed</div>
+                  <div
+                    className="chart-bar"
+                    style={{
+                      width: `${(completedTasks.length / 50) * 100}%`,
+                    }}
+                  ></div>
+                  <div className="chart-value">{completedTasks.length}</div>
+                </div>
               </div>
-            ) : (
-              <p className="empty-message">No recent projects found.</p>
-            )}
+            </div>
           </section>
 
-          {/* Completed Tasks */}
-          <section className="dashboard-section">
-            <h2 className="section-title">Recently Completed Tasks</h2>
-            {Array.isArray(completedTasks) && completedTasks.length > 0 ? (
-              <ul className="task-list">
-                {completedTasks.map((task) => (
-                  <li key={task._id}>{task.title}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="empty-message">No completed tasks yet.</p>
-            )}
+          <section className="recentProNTask">
+            {/* Recent Projects */}
+            <section className="dashboard-section">
+              <h2 className="section-title">Recent Projects</h2>
+              {Array.isArray(recentProjects) && recentProjects.length > 0 ? (
+                <div className="project-grid">
+                  {recentProjects.map((project) => (
+                    <div key={project._id} className="project-name">
+                      {project.title}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-message">No recent projects found.</p>
+              )}
+            </section>
+
+            {/* Completed Tasks */}
+            <section className="dashboard-section">
+              <h2 className="section-title">Recently Completed Tasks</h2>
+              {Array.isArray(completedTasks) && completedTasks.length > 0 ? (
+                <ul className="task-list">
+                  {completedTasks.map((task) => (
+                    <li key={task._id}>
+                      {task.title} – <em>{task.project.title}</em>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="empty-message">No completed tasks yet.</p>
+              )}
+            </section>
           </section>
         </div>
       )}

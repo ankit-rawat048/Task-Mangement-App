@@ -1,0 +1,88 @@
+.projects-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+}
+
+.projects-header {
+  margin-bottom: 2rem;
+}
+
+.projects-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-bar,
+.filter-dropdown,
+.sort-dropdown {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.create-project-btn {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.create-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+  background-color: #0056b3;
+}
+
+.loading-text,
+.no-projects {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pagination {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.pagination-btn {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  margin: 0 0.3rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
