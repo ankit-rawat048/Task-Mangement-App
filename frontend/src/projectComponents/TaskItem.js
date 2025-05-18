@@ -15,7 +15,47 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
   const [showSubtaskForm, setShowSubtaskForm] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(true);
-  const [showButtons, setShowButtons] = useState(false); // Toggle for action buttons
+  const [showButtons, setShowButtons] = useState(false);
+
+  const [isEditingTask, setIsEditingTask] = useState(false);
+  const [editTitle, setEditTitle] = useState(task.title);
+  const [editDescription, setEditDescription] = useState(task.description || "");
+  const [editDueDate, setEditDueDate] = useState(task.dueDate ? task.dueDate.slice(0, 10) : "");
+  const [editStatus, setEditStatus] = useState(task.status || "pending");
+  const [isSavingTask, setIsSavingTask] = useState(false);
+
+  const handleSaveTask = async () => {
+    try {
+      setIsSavingTask(true);
+      setError(null);
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No authentication token");
+
+      const res = await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: editTitle,
+          description: editDescription,
+          dueDate: editDueDate || null,
+          status: editStatus,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update task");
+
+      const updatedTask = await res.json();
+      onTaskUpdated(updatedTask);
+      setIsEditingTask(false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSavingTask(false);
+    }
+  };
 
   const handleSaveNotes = async () => {
     try {
@@ -76,31 +116,100 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
     }
   };
 
+  const handleCompleteTask = async () => {
+    if (!task || !task._id) {
+      setError("Task ID is missing or invalid.");
+      return;
+    }
+
+    const incompleteSubtasks = (task.subtasks || []).some(
+      (sub) => sub.status !== "completed"
+    );
+
+    if (incompleteSubtasks) {
+      setError("All subtasks must be completed before completing this task.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No authentication token found.");
+
+      const res = await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "completed" }),
+      });
+
+      if (!res.ok) throw new Error("Failed to mark task as completed");
+
+      const updated = await res.json();
+      onTaskUpdated(updated);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="task-item-container">
       <div className="task-item-header">
-        <button onClick={() => setIsExpanded(!isExpanded)} aria-label="Toggle expand" style={{width:"10%"}}>
-          {isExpanded ? "▼" : "▶"} 
+        <button onClick={() => setIsExpanded(!isExpanded)} style={{ width: "10%" }}>
+          {isExpanded ? "▼" : "▶"}
         </button>
-        <strong onClick={() => onSelect(task)} style={{width:"80%"}}>{task.title}</strong>
 
-        <div className="dropdownButton" style={{width:"10%"}}>
+        {!isEditingTask ? (
+          <strong
+            onClick={() => onSelect(task)}
+            style={{ width: "80%", display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            {task.title}
+            {task.status === "completed" && (
+              <span role="img" aria-label="Completed" style={{ color: "green" }}>✅</span>
+            )}
+          </strong>
+        ) : (
+          <div style={{ width: "80%", display: "flex", flexDirection: "column", gap: "4px" }}>
+            <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+            <input type="date" value={editDueDate} onChange={(e) => setEditDueDate(e.target.value)} />
+            <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        )}
+
+        {!isEditingTask && task.status !== "completed" && (
+          <button onClick={handleCompleteTask} className="task-item-button">✅ Completed</button>
+        )}
+
+        <div className="dropdownButton" style={{ width: "10%" }}>
           <button onClick={() => setShowButtons(!showButtons)}>⋮</button>
           {showButtons && (
             <div className="task-item-button-group">
-              {!isEditingNotes && (
-                <button onClick={() => setIsEditingNotes(true)} className="task-item-button">
-                  📝 Edit Notes
-                </button>
+              {!isEditingNotes && !isEditingTask && (
+                <>
+                  <button onClick={() => setIsEditingNotes(true)}>📝 Edit Notes</button>
+                  <button onClick={() => setShowSubtaskForm(true)}>➕ Add Subtask</button>
+                  <button onClick={() => setIsEditingTask(true)}>✏️ Edit Task</button>
+                </>
               )}
-              {!showSubtaskForm && (
-                <button onClick={() => setShowSubtaskForm(true)} className="task-item-button">
-                  ➕ Add Subtask
-                </button>
+              {isEditingTask && (
+                <>
+                  <button onClick={handleSaveTask} disabled={isSavingTask}>
+                    {isSavingTask ? "Saving..." : "💾 Save Task"}
+                  </button>
+                  <button onClick={() => setIsEditingTask(false)} disabled={isSavingTask}>
+                    Cancel
+                  </button>
+                </>
               )}
-              <button onClick={() => onTaskDeleted(task._id)} className="task-item-button">
-                🗑️ Delete
-              </button>
+              <button onClick={() => onTaskDeleted(task._id)}>🗑️ Delete</button>
             </div>
           )}
         </div>
@@ -110,23 +219,12 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
         <>
           {isEditingNotes && (
             <div className="task-item-notes">
-              <textarea
-                className="task-item-textarea"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={3}
-              />
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
               <div className="task-item-button-group">
-                <button
-                  className="task-item-button"
-                  onClick={handleSaveNotes}
-                  disabled={isSavingNotes}
-                >
+                <button onClick={handleSaveNotes} disabled={isSavingNotes}>
                   {isSavingNotes ? "Saving..." : "💾 Save Notes"}
                 </button>
-                <button className="task-item-button" onClick={() => setIsEditingNotes(false)}>
-                  Cancel
-                </button>
+                <button onClick={() => setIsEditingNotes(false)}>Cancel</button>
               </div>
             </div>
           )}
@@ -136,24 +234,18 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
           {showSubtaskForm && (
             <div className="task-item-subtask-form">
               <input
-                className="task-item-subtask-input"
                 placeholder="Subtask title"
                 value={subtaskTitle}
                 onChange={(e) => setSubtaskTitle(e.target.value)}
               />
               <textarea
-                className="task-item-subtask-textarea"
                 placeholder="Subtask description"
                 value={subtaskDescription}
                 onChange={(e) => setSubtaskDescription(e.target.value)}
               />
               <div className="task-item-button-group">
-                <button className="task-item-button" onClick={handleAddSubtask}>
-                  Add
-                </button>
-                <button className="task-item-button" onClick={() => setShowSubtaskForm(false)}>
-                  Cancel
-                </button>
+                <button onClick={handleAddSubtask}>Add</button>
+                <button onClick={() => setShowSubtaskForm(false)}>Cancel</button>
               </div>
             </div>
           )}

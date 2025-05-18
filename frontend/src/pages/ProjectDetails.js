@@ -84,7 +84,8 @@ const ProjectDetails = () => {
     <div className="project-details">
       {error && <div className="error">{error}</div>}
 
-      <ProjectHeader project={project} />
+      <ProjectHeader project={project} projectId={projectId} />
+
 
       {/* 🔄 Show project progress visually
       <div className="project-progress">

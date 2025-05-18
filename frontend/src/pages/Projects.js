@@ -1,5 +1,6 @@
 // src/pages/Projects.js
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProjectCard from "../components/ProjectCard";
 import Navbar from "../components/Navbar";
 import '../styles/csspages/Projects.css';
@@ -13,6 +14,9 @@ const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 9;
   const token = localStorage.getItem("token");
+
+  const navigate = useNavigate(); // ✅ Use useNavigate hook
+  const createProjects = () => navigate("/createproject"); // ✅ Correct navigation
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -46,20 +50,29 @@ const Projects = () => {
     }
   }, [token]);
 
-  // Search functionality
-  const filteredProjects = projects.filter((project) =>
-    project.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter based on search term
+  const filteredProjects = projects
+    .filter((project) =>
+      project.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((project) => {
+      if (filter === "All") return true;
+      if (filter === "Completed") return project.status === "Completed";
+      if (filter === "In Progress") return project.status === "In Progress";
+      return true;
+    });
 
-  // Sorting functionality
+  // Sort projects
   const sortedProjects = filteredProjects.sort((a, b) => {
     if (sort === "name") {
       return a.title.localeCompare(b.title);
+    } else if (sort === "date") {
+      return new Date(b.createdAt) - new Date(a.createdAt);
     }
     return 0;
   });
 
-  // Pagination
+  // Pagination logic
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = sortedProjects.slice(indexOfFirstProject, indexOfLastProject);
@@ -98,8 +111,8 @@ const Projects = () => {
 
       {/* Create New Project Button */}
       <div className="create-project-btn">
-        <button className="create-btn" onClick={() => alert("Redirecting to Create Project Page")}>
-          + Create New Project
+        <button onClick={createProjects} className="create-btn">
+          + Create Project
         </button>
       </div>
 
