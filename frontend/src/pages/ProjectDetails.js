@@ -5,7 +5,6 @@ import TaskList from "../projectComponents/TaskList";
 import { useParams } from "react-router-dom";
 import '../styles/csspages/ProjectDetails.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const ProjectDetails = () => {
   const { id: projectId } = useParams();
@@ -18,6 +17,8 @@ const ProjectDetails = () => {
   const handleOpenForm = () => setShowForm(true);
   const handleCloseForm = () => setShowForm(false);
   const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
+  const api = process.env.REACT_APP_API_URL;
+
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -25,7 +26,7 @@ const ProjectDetails = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_BASE}/api/projects/${projectId}/details`, {
+        const response = await fetch(`${api}/api/projects/${projectId}/details`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Failed to fetch project details");
@@ -44,7 +45,7 @@ const ProjectDetails = () => {
   const handleTaskUpdate = async (updatedTask) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE}/api/tasks/${updatedTask._id}`, {
+      const response = await fetch(`${api}/api/tasks/${updatedTask._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +65,7 @@ const ProjectDetails = () => {
   const handleTaskDelete = async (taskId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
+      const response = await fetch(`${api}/api/tasks/${taskId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

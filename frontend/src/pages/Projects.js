@@ -14,6 +14,8 @@ const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 9;
   const token = localStorage.getItem("token");
+  const api = process.env.REACT_APP_API_URL;
+
 
   const navigate = useNavigate(); // ✅ Use useNavigate hook
   const createProjects = () => navigate("/createproject"); // ✅ Correct navigation
@@ -21,7 +23,7 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/projects", {
+        const response = await fetch(`${api}/api/projects`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

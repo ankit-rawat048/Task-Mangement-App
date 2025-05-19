@@ -10,6 +10,8 @@ const CreateProject = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const api = process.env.REACT_APP_API_URL;
+
 
   const createNewProject = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ const CreateProject = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch(`${api}/api/projects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

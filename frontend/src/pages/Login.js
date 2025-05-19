@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import '../styles/csspages/Login.css';
+import "../styles/csspages/Login.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const api = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     // Redirect to dashboard if user is already logged in
@@ -22,7 +23,8 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${api}/api/auth/login`, {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -47,26 +49,30 @@ const Login = () => {
         <h2 className="login-title">Login</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="Email" 
-            value={formData.email} 
-            onChange={handleChange} 
-            required 
-            className="input-field" 
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="input-field"
           />
-          <input 
-            type="password" 
-            name="password" 
-            placeholder="Password" 
-            value={formData.password} 
-            onChange={handleChange} 
-            required 
-            className="input-field" 
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="input-field"
           />
-          <button type="submit" className="submit-button">Login</button>
-          <p>if you are new here <Link to={('/signup')}>Create new account</Link></p>
+          <button type="submit" className="submit-button">
+            Login
+          </button>
+          <p>
+            if you are new here <Link to={"/signup"}>Create new account</Link>
+          </p>
         </form>
       </div>
     </div>

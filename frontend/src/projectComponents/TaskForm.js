@@ -8,6 +8,8 @@ const TaskForm = ({ projectId, onTaskCreated, onClose }) => {
   const [priority, setPriority] = useState('');
   const [tags, setTags] = useState([]);
   const [error, setError] = useState(null);
+    const api = process.env.REACT_APP_API_URL;
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const TaskForm = ({ projectId, onTaskCreated, onClose }) => {
     };
 
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/projects/${projectId}/tasks`, {
+      const res = await fetch(`${api}/api/tasks/projects/${projectId}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

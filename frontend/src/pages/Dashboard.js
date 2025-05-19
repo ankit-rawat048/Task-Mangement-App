@@ -12,6 +12,8 @@ const Dashboard = () => {
   const [username, setUsername] = useState(""); // New state for username
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const api = process.env.REACT_APP_API_URL;
+
 
   const createProjects = () => navigate("/createproject");
 
@@ -26,7 +28,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/user", {
+        const response = await fetch(`${api}/api/user`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

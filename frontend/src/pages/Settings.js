@@ -6,6 +6,8 @@ const Settings = () => {
   const [error, setError] = useState("");
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+  const api = process.env.REACT_APP_API_URL;
+
 
   // Fetch user data to get userId
   useEffect(() => {
@@ -14,7 +16,7 @@ const Settings = () => {
         const token = localStorage.getItem("token");
         if (!token) return navigate("/login"); // Redirect if no token
 
-        const response = await fetch("http://localhost:5000/api/user", {
+        const response = await fetch(`${api}/api/user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +59,7 @@ const Settings = () => {
     try {
       console.log("🛑 Sending DELETE request for User ID:", userId);
 
-      const response = await fetch("http://localhost:5000/api/auth/delete", {
+      const response = await fetch(`${api}/api/auth/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

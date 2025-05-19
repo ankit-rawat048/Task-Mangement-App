@@ -24,6 +24,9 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
   const [editStatus, setEditStatus] = useState(task.status || "pending");
   const [isSavingTask, setIsSavingTask] = useState(false);
 
+    const api = process.env.REACT_APP_API_URL;
+
+
   const handleSaveTask = async () => {
     try {
       setIsSavingTask(true);
@@ -31,7 +34,7 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token");
 
-      const res = await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+      const res = await fetch(`${api}/api/tasks/${task._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +66,7 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token");
 
-      const res = await fetch(`http://localhost:5000/api/tasks/${task._id}/notes`, {
+      const res = await fetch(`${api}/api/tasks/${task._id}/notes`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +89,7 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token");
 
-      const res = await fetch(`http://localhost:5000/api/tasks/projects/${projectId}/tasks`, {
+      const res = await fetch(`${api}/api/tasks/projects/${projectId}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +138,7 @@ const TaskItem = ({ task, onTaskUpdated, onTaskDeleted, onSelect }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found.");
 
-      const res = await fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+      const res = await fetch(`${api}/api/tasks/${task._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
