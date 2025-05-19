@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const TaskForm = ({ projectId, onTaskCreated }) => {
+const TaskForm = ({ projectId, onTaskCreated, onClose }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
@@ -52,6 +52,9 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
       setPriority('');
       setTags([]);
       setError(null);
+
+      // Optionally close the form after submission
+      onClose();
     } catch (err) {
       setError('Error creating task: ' + err.message);
     }
@@ -98,7 +101,11 @@ const TaskForm = ({ projectId, onTaskCreated }) => {
           } />
         </label>
 
-        <button type="submit">Create Task</button>
+        <div className="form-buttons">
+          <button type="submit">Create Task</button>
+          <button type="button" onClick={onClose}>Cancel</button>
+        </div>
+
         {error && <p className="error">{error}</p>}
       </form>
     </div>
