@@ -13,15 +13,23 @@ const Projects = () => {
   const [sort, setSort] = useState("name");
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 9;
+
   const token = localStorage.getItem("token");
   const api = process.env.REACT_APP_API_URL;
 
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // ✅ Use useNavigate hook
-  const createProjects = () => navigate("/createproject"); // ✅ Correct navigation
+  const createProjects = () => navigate("/createproject");
 
   useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      console.warn("No token found. User might not be logged in.");
+      return;
+    }
+
     const fetchProjects = async () => {
+      setLoading(true);
       try {
         const response = await fetch(`${api}/api/projects`, {
           method: "GET",
@@ -44,15 +52,10 @@ const Projects = () => {
       }
     };
 
-    if (token) {
-      fetchProjects();
-    } else {
-      console.warn("No token found. User might not be logged in.");
-      setLoading(false);
-    }
-  }, [token]);
+    fetchProjects();
+  }, [token, api]);
 
-  // Filter based on search term
+  // Filter based on search term and status
   const filteredProjects = projects
     .filter((project) =>
       project.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -74,14 +77,14 @@ const Projects = () => {
     return 0;
   });
 
-  // Pagination logic
+  // Pagination
+  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = sortedProjects.slice(indexOfFirstProject, indexOfLastProject);
 
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-
   const handlePagination = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
 
@@ -100,12 +103,20 @@ const Projects = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
         />
-        <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-dropdown">
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="filter-dropdown"
+        >
           <option value="All">All Projects</option>
           <option value="Completed">Completed Projects</option>
           <option value="In Progress">In Progress</option>
         </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="sort-dropdown">
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="sort-dropdown"
+        >
           <option value="name">Sort by Name</option>
           <option value="date">Sort by Date</option>
         </select>
@@ -146,7 +157,9 @@ const Projects = () => {
           <button
             key={number + 1}
             onClick={() => handlePagination(number + 1)}
-            className={`pagination-btn ${currentPage === number + 1 ? "active" : ""}`}
+            className={`pagination-btn ${
+              currentPage === number + 1 ? "active" : ""
+            }`}
           >
             {number + 1}
           </button>

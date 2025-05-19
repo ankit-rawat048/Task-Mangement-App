@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../projectComponents/StyleOfProject.css";
+import "../styles/components/ProjectHeader.css";
 
 const CircularProgress = ({ percentage }) => {
   const radius = 80;
@@ -15,8 +15,9 @@ const CircularProgress = ({ percentage }) => {
   };
 
   return (
-    <svg height={radius * 2} width={radius * 2} style={{ maxWidth: "100%" }}>
+    <svg height={radius * 2} width={radius * 2} className="circular-progress">
       <circle
+        className="progress-bg"
         stroke="#e0e0e0"
         fill="transparent"
         strokeWidth={stroke}
@@ -25,6 +26,7 @@ const CircularProgress = ({ percentage }) => {
         cy={radius}
       />
       <circle
+        className="progress-bar"
         stroke={getProgressColor()}
         fill="transparent"
         strokeWidth={stroke}
@@ -34,25 +36,15 @@ const CircularProgress = ({ percentage }) => {
         r={normalizedRadius}
         cx={radius}
         cy={radius}
-        style={{ transition: "stroke-dashoffset 0.6s ease, stroke 0.3s ease" }}
+        style={{
+          transition: "stroke-dashoffset 0.6s ease, stroke 0.3s ease"
+        }}
       />
-      <text
-        x="50%"
-        y="50%"
-        dy="0.3em"
-        textAnchor="middle"
-        className="circular-progress-text-primary"
-      >
+      <text x="50%" y="50%" dy="0.3em" textAnchor="middle" className="progress-text-main">
         {percentage}%
       </text>
-      <text
-        x="50%"
-        y="65%"
-        dy="1.3em"
-        textAnchor="middle"
-        className="circular-progress-text-secondary"
-      >
-        Tasks Completed
+      <text x="50%" y="65%" dy="1.3em" textAnchor="middle" className="progress-text-sub">
+        Completed
       </text>
     </svg>
   );
@@ -61,12 +53,9 @@ const CircularProgress = ({ percentage }) => {
 const ProjectHeader = ({ project, projectId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(project.title);
-  const [editedDescription, setEditedDescription] = useState(
-    project.description
-  );
+  const [editedDescription, setEditedDescription] = useState(project.description);
   const [error, setError] = useState(null);
   const api = process.env.REACT_APP_API_URL;
-
   const progress = project.progress ?? 0;
 
   const handleEditProject = async () => {
@@ -92,22 +81,17 @@ const ProjectHeader = ({ project, projectId }) => {
   };
 
   const handleDeleteProject = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this project?");
     if (!confirmed) return;
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${api}/api/projects/${projectId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${api}/api/projects/${projectId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to delete project");
       window.location.href = "/";
@@ -117,43 +101,27 @@ const ProjectHeader = ({ project, projectId }) => {
   };
 
   return (
-    <div className="project-header-container">
+    <div className="project-header">
       <div className="project-header-left">
-        <div className="project-header-title-row">
+        <div className="project-title-row">
           {isEditing ? (
             <>
               <input
-                className="project-edit-input"
+                className="input-title"
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
               />
-              <div className="project-header-actions">
-                <button onClick={handleEditProject} title="Save Changes">
-                  💾
-                </button>
-                <button onClick={() => setIsEditing(false)} title="Cancel">
-                  ❌
-                </button>
+              <div className="action-buttons">
+                <button onClick={handleEditProject} title="Save">💾</button>
+                <button onClick={() => setIsEditing(false)} title="Cancel">❌</button>
               </div>
             </>
           ) : (
             <>
-              <h1 className="project-header-title">{project.title}</h1>
-              <div className="project-header-actions">
-                <button
-                  className="project-header-edit-btn"
-                  onClick={() => setIsEditing(true)}
-                  title="Edit Project"
-                >
-                  ✏️
-                </button>
-                <button
-                  className="project-header-delete-btn"
-                  onClick={handleDeleteProject}
-                  title="Delete Project"
-                >
-                  🗑️
-                </button>
+              <h1>{project.title}</h1>
+              <div className="action-buttons">
+                <button onClick={() => setIsEditing(true)} title="Edit">✏️</button>
+                <button onClick={handleDeleteProject} title="Delete">🗑️</button>
               </div>
             </>
           )}
@@ -161,30 +129,17 @@ const ProjectHeader = ({ project, projectId }) => {
 
         {isEditing ? (
           <textarea
-            className="project-edit-textarea"
+            className="input-description"
             value={editedDescription}
             onChange={(e) => setEditedDescription(e.target.value)}
           />
         ) : (
-          <p className="project-header-description">{project.description}</p>
+          <p>{project.description}</p>
         )}
 
-        <p className="project-header-detail">
-          <span className="project-header-strong">Created:</span>{" "}
-          {project.createdAt
-            ? new Date(project.createdAt).toLocaleDateString()
-            : "N/A"}
-        </p>
-        <p className="project-header-detail">
-          <span className="project-header-strong">Due:</span>{" "}
-          {project.dueDate
-            ? new Date(project.dueDate).toLocaleDateString()
-            : "N/A"}
-        </p>
-        <p className="project-header-detail">
-          <span className="project-header-strong">Tags:</span>{" "}
-          {project.tags?.length ? project.tags.join(", ") : "None"}
-        </p>
+        <p><strong>Created:</strong> {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "N/A"}</p>
+        <p><strong>Due:</strong> {project.dueDate ? new Date(project.dueDate).toLocaleDateString() : "N/A"}</p>
+        <p><strong>Tags:</strong> {project.tags?.length ? project.tags.join(", ") : "None"}</p>
 
         {error && <p className="error">{error}</p>}
       </div>

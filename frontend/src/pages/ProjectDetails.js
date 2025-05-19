@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ProjectHeader from "../projectComponents/ProjectHeader";
 import TaskForm from "../projectComponents/TaskForm";
 import TaskList from "../projectComponents/TaskList";
 import { useParams } from "react-router-dom";
 import '../styles/csspages/ProjectDetails.css';
-
 
 const ProjectDetails = () => {
   const { id: projectId } = useParams();
@@ -13,12 +12,13 @@ const ProjectDetails = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false); // for update/delete actions
 
-  const handleOpenForm = () => setShowForm(true);
-  const handleCloseForm = () => setShowForm(false);
-  const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
   const api = process.env.REACT_APP_API_URL;
 
+  const clearErrorAfterTimeout = useCallback(() => {
+    setTimeout(() => setError(null), 5000);
+  }, []);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -34,15 +34,22 @@ const ProjectDetails = () => {
         setProject(data.project);
       } catch (err) {
         setError("Error fetching project details: " + err.message);
+        clearErrorAfterTimeout();
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjectDetails();
-  }, [projectId, refreshTrigger]);
+  }, [projectId, refreshTrigger, api, clearErrorAfterTimeout]);
+
+  const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
 
   const handleTaskUpdate = async (updatedTask) => {
+    if (actionLoading) return;
+    setError(null);
+    setActionLoading(true);
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${api}/api/tasks/${updatedTask._id}`, {
@@ -59,10 +66,17 @@ const ProjectDetails = () => {
       refreshProjectDetails();
     } catch (err) {
       setError("Error updating task: " + err.message);
+      clearErrorAfterTimeout();
+    } finally {
+      setActionLoading(false);
     }
   };
 
   const handleTaskDelete = async (taskId) => {
+    if (actionLoading) return;
+    setError(null);
+    setActionLoading(true);
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${api}/api/tasks/${taskId}`, {
@@ -75,37 +89,57 @@ const ProjectDetails = () => {
       refreshProjectDetails();
     } catch (err) {
       setError("Error deleting task: " + err.message);
+      clearErrorAfterTimeout();
+    } finally {
+      setActionLoading(false);
     }
   };
+
+  const handleOpenForm = () => setShowForm(true);
+  const handleCloseForm = () => setShowForm(false);
 
   if (loading) return <div className="loading">Loading project details...</div>;
   if (!project) return <div className="not-found">Project not found.</div>;
 
   return (
     <div className="project-details">
-      {error && <div className="error">{error}</div>}
+      {error && <div className="error" role="alert">{error}</div>}
 
       <ProjectHeader project={project} projectId={projectId} />
 
-
-      {/* 🔄 Show project progress visually
-      <div className="project-progress">
-        <label>Progress: </label>
-        <progress value={project.progress || 0} max="100" />
+      {/* Uncomment below to enable visual progress bar */}
+      {/* <div className="project-progress">
+        <label htmlFor="progressBar">Progress: </label>
+        <progress id="progressBar" value={project.progress || 0} max="100" />
         <span>{Math.round(project.progress || 0)}%</span>
       </div> */}
 
-      <button className="add-task-button" onClick={handleOpenForm}>
+      <button
+        className="add-task-button"
+        onClick={handleOpenForm}
+        disabled={actionLoading}
+        aria-disabled={actionLoading}
+      >
         ➕ Add Task
       </button>
 
       {showForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          onClick={handleCloseForm}
+        >
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <TaskForm
               projectId={projectId}
               onClose={handleCloseForm}
-              onTaskCreated={refreshProjectDetails}
+              onTaskCreated={() => {
+                refreshProjectDetails();
+                handleCloseForm();
+              }}
+              disabled={actionLoading}
             />
           </div>
         </div>
@@ -118,6 +152,7 @@ const ProjectDetails = () => {
         projectId={projectId}
         onTaskUpdated={handleTaskUpdate}
         onTaskDeleted={handleTaskDelete}
+        actionLoading={actionLoading}
       />
     </div>
   );

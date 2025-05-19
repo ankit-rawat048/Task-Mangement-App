@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import "../projectComponents/StyleOfProject.css";
+
 
 const TaskForm = ({ projectId, onTaskCreated, onClose }) => {
   const [title, setTitle] = useState('');

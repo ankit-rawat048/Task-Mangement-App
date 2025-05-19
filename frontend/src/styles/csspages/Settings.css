@@ -1,18 +1,8 @@
-/* Settings Page Styles */
-body {
-  padding: 24px;
-  margin: 0;
-  box-sizing: border-box;
-}
+
 
   
 .settings-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #141e30, #243b55);
     color: white;
     text-align: center;
   }
@@ -31,7 +21,11 @@ body {
     border-radius: 5px;
   }
   
-  button {
+  
+  
+  .delete-button {
+    background: #ff4d4d;
+    color: white;
     width: 200px;
     padding: 12px;
     margin: 10px;
@@ -42,11 +36,6 @@ body {
     transition: 0.3s;
   }
   
-  .delete-button {
-    background: #ff4d4d;
-    color: white;
-  }
-  
   .delete-button:hover {
     background: #cc0000;
   }
@@ -54,9 +43,21 @@ body {
   .logout-button {
     background: #ffcc00;
     color: black;
+    width: 200px;
+    padding: 12px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
   }
   
   .logout-button:hover {
     background: #e6b800;
   }
   
+  .settings-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
