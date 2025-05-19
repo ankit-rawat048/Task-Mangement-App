@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from '../components/Navbar';
+import Navbar from "../components/Navbar";
 
 const Settings = () => {
   const [error, setError] = useState("");
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
   const api = process.env.REACT_APP_API_URL;
-
 
   // Fetch user data to get userId
   useEffect(() => {
@@ -20,8 +19,8 @@ const Settings = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await response.json();
@@ -52,7 +51,11 @@ const Settings = () => {
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your account? This action is irreversible."
+      )
+    ) {
       return;
     }
 
@@ -63,9 +66,9 @@ const Settings = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId }) // ✅ Send as JSON object
+        body: JSON.stringify({ userId }), // ✅ Send as JSON object
       });
 
       const data = await response.json();
@@ -94,8 +97,12 @@ const Settings = () => {
       <Navbar />
       <h2>Settings</h2>
       {error && <p className="error-message">{error}</p>}
-      <button onClick={handleDeleteAccount} className="delete-button">Delete Account</button>
-      <button onClick={handleLogout} className="logout-button">Logout</button>
+      <button onClick={handleDeleteAccount} className="delete-button">
+        Delete Account
+      </button>
+      <button onClick={handleLogout} className="logout-button">
+        Logout
+      </button>
     </div>
   );
 };
