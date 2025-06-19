@@ -165,137 +165,144 @@ body {
   margin-top: 0.75rem;
 }
 
+/* Container for each task item */
 .task-item-container {
   border: 1px solid #ddd;
   border-radius: 8px;
-  margin: 12px 0;
-  padding: 12px;
-  background-color: #fafafa;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: "Segoe UI", sans-serif;
 }
 
+/* Header row containing title and action buttons */
 .task-item-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: relative;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.task-item-header strong {
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-.task-item-header input,
-.task-item-header textarea,
-.task-item-header select {
-  width: 100%;
-  font-size: 0.9rem;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.task-item-header input[type="date"] {
-  max-width: 180px;
-}
-
-.task-item-button {
-  background-color: #000000;
+/* Title button (expand/collapse) */
+.task-item-header > button {
+  background-color: transparent;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.2s;
 }
 
-.task-item-button:hover {
-  background-color: #0a0808;
-}
-
+/* Dropdown button container */
 .dropdownButton {
   position: relative;
 }
 
-.dropdownButton button {
-  background: transparent;
-  color: black;
-  border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-}
-
+/* Dropdown menu button group */
 .task-item-button-group {
   position: absolute;
-  top: 120%;
+  top: 28px;
   right: 0;
-  background-color: #000000;
+  background-color: #fff;
   border: 1px solid #ccc;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
   border-radius: 6px;
   padding: 6px;
-  gap: 4px;
-  width: max-content;
-  min-width: 160px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-item-button-group button {
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  background-color: #ffffff;
+  background-color: transparent;
   border: none;
-  border-radius: 4px;
+  padding: 6px 10px;
   text-align: left;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .task-item-button-group button:hover {
-  background-color: #eee;
+  background-color: #f0f0f0;
 }
 
-.task-item-notes {
-  margin-top: 10px;
-}
-
+/* Notes textarea */
 .task-item-notes textarea {
   width: 100%;
   padding: 8px;
-  font-size: 0.9rem;
-  border: 1px solid #ccc;
   border-radius: 6px;
+  border: 1px solid #ccc;
   resize: vertical;
+  font-size: 14px;
 }
 
-.task-item-subtask-form {
-  margin-top: 10px;
+/* Button group for saving/canceling notes */
+.task-item-button-group {
+  margin-top: 6px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+
+/* Subtask form styling */
+.task-item-subtask-form {
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #fff;
+  border-left: 4px solid #007bff;
+  border-radius: 6px;
 }
 
 .task-item-subtask-form input,
 .task-item-subtask-form textarea {
-  padding: 6px;
-  font-size: 0.9rem;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+/* Subtasks wrapper */
 .task-item-subtasks {
-  padding-left: 20px;
-  margin-top: 10px;
+  margin-top: 12px;
+  padding-left: 16px;
   border-left: 2px dashed #ccc;
 }
 
+/* Error message */
 .task-item-error {
   color: red;
-  font-size: 0.85rem;
-  margin-top: 6px;
+  font-size: 14px;
+  margin-top: 8px;
 }
+
+/* Task complete button */
+.task-item-button {
+  background-color: #28a745;
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-item-button:hover {
+  background-color: #218838;
+}
+
+/* Input fields inside editing mode */
+.task-item-header input,
+.task-item-header textarea,
+.task-item-header select {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  margin-bottom: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 
 /* Task List */
 .task-list-container {

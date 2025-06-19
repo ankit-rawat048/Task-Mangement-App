@@ -119,9 +119,7 @@ const ProjectDetails = () => {
         onClick={handleOpenForm}
         disabled={actionLoading}
         aria-disabled={actionLoading}
-      >
-        ➕ Add Task
-      </button>
+      >➕ Add Task</button>
 
       {showForm && (
         <div
