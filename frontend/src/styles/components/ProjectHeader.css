@@ -1,13 +1,14 @@
 .project-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 1.5rem;
-  background-color: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  gap: 1.5rem;
-  flex-wrap: wrap;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px #00000014;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+    padding: 1.5rem;
+    width: 100%;
 }
 
 .project-header-left {

@@ -31,9 +31,13 @@
 }
 
 .project-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+    display: flex;
+    /* flex-direction: column; */
+    gap: .5rem;
+    border: 1px solid #333;
+    padding: 10px 0;
+    width: 100%;
+    justify-content: flex-end;
 }
 
 .project-actions input,
@@ -54,6 +58,7 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width:20%;
 }
 
 .project-actions button:hover {
