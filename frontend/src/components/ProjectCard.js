@@ -14,6 +14,7 @@ const styles = `
     background-color: #fafafa;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s ease;
+    width:fit-content;
   }
 
   .project-card:hover {
