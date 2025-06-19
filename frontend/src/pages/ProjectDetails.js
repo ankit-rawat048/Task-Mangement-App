@@ -153,7 +153,6 @@ const ProjectDetails = () => {
       )}
 
       <div className="task-heading">
-        Tasks
         <TaskList
           tasks={(project.tasks || []).filter((task) => !task.parentTask)}
           projectId={projectId}

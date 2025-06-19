@@ -112,16 +112,16 @@ const ProjectHeader = ({ project, projectId }) => {
                 onChange={(e) => setEditedTitle(e.target.value)}
               />
               <div className="action-buttons">
-                <button onClick={handleEditProject} title="Save">💾</button>
-                <button onClick={() => setIsEditing(false)} title="Cancel">❌</button>
+                <button onClick={handleEditProject} title="Save">Save</button>
+                <button onClick={() => setIsEditing(false)} title="Cancel">Cancel</button>
               </div>
             </>
           ) : (
             <>
               <h1>{project.title}</h1>
               <div className="action-buttons">
-                <button onClick={() => setIsEditing(true)} title="Edit">✏️</button>
-                <button onClick={handleDeleteProject} title="Delete">🗑️</button>
+                <button onClick={() => setIsEditing(true)} title="Edit">Edit</button>
+                <button onClick={handleDeleteProject} title="Delete">Delete</button>
               </div>
             </>
           )}
