@@ -50,98 +50,21 @@ const CircularProgress = ({ percentage }) => {
   );
 };
 
-const ProjectHeader = ({ project, projectId }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(project.title);
-  const [editedDescription, setEditedDescription] = useState(project.description);
-  const [error, setError] = useState(null);
-  const api = process.env.REACT_APP_API_URL;
+const ProjectHeader = ({ project }) => {
   const progress = project.progress ?? 0;
-
-  const handleEditProject = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${api}/api/projects/${projectId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: editedTitle,
-          description: editedDescription,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update project");
-      window.location.reload();
-    } catch (err) {
-      setError("Failed to update project: " + err.message);
-    }
-  };
-
-  const handleDeleteProject = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this project?");
-    if (!confirmed) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${api}/api/projects/${projectId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete project");
-      window.location.href = "/";
-    } catch (err) {
-      setError("Failed to delete project: " + err.message);
-    }
-  };
 
   return (
     <div className="project-header">
       <div className="project-header-left">
         <div className="project-title-row">
-          {isEditing ? (
-            <>
-              <input
-                className="input-title"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-              />
-              <div className="action-buttons">
-                <button onClick={handleEditProject} title="Save">Save</button>
-                <button onClick={() => setIsEditing(false)} title="Cancel">Cancel</button>
-              </div>
-            </>
-          ) : (
-            <>
-              <h1>{project.title}</h1>
-              <div className="action-buttons">
-                <button onClick={() => setIsEditing(true)} title="Edit">Edit</button>
-                <button onClick={handleDeleteProject} title="Delete">Delete</button>
-              </div>
-            </>
-          )}
+          <h1>{project.title}</h1>
         </div>
 
-        {isEditing ? (
-          <textarea
-            className="input-description"
-            value={editedDescription}
-            onChange={(e) => setEditedDescription(e.target.value)}
-          />
-        ) : (
-          <p>{project.description}</p>
-        )}
+        <p>{project.description}</p>
 
         <p><strong>Created:</strong> {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "N/A"}</p>
         <p><strong>Due:</strong> {project.dueDate ? new Date(project.dueDate).toLocaleDateString() : "N/A"}</p>
         <p><strong>Tags:</strong> {project.tags?.length ? project.tags.join(", ") : "None"}</p>
-
-        {error && <p className="error">{error}</p>}
       </div>
 
       <div className="project-header-right">

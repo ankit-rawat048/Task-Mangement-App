@@ -12,7 +12,10 @@ const ProjectDetails = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false); // for update/delete actions
+  const [actionLoading, setActionLoading] = useState(false);
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
 
   const api = process.env.REACT_APP_API_URL;
 
@@ -26,15 +29,14 @@ const ProjectDetails = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `${api}/api/projects/${projectId}/details`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await fetch(`${api}/api/projects/${projectId}/details`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) throw new Error("Failed to fetch project details");
         const data = await response.json();
         setProject(data.project);
+        setEditedTitle(data.project.title);
+        setEditedDescription(data.project.description);
       } catch (err) {
         setError("Error fetching project details: " + err.message);
         clearErrorAfterTimeout();
@@ -52,7 +54,6 @@ const ProjectDetails = () => {
     if (actionLoading) return;
     setError(null);
     setActionLoading(true);
-
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${api}/api/tasks/${updatedTask._id}`, {
@@ -63,9 +64,7 @@ const ProjectDetails = () => {
         },
         body: JSON.stringify(updatedTask),
       });
-
       if (!response.ok) throw new Error("Failed to update task");
-
       refreshProjectDetails();
     } catch (err) {
       setError("Error updating task: " + err.message);
@@ -79,22 +78,54 @@ const ProjectDetails = () => {
     if (actionLoading) return;
     setError(null);
     setActionLoading(true);
-
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${api}/api/tasks/${taskId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!response.ok) throw new Error("Failed to delete task");
-
       refreshProjectDetails();
     } catch (err) {
       setError("Error deleting task: " + err.message);
       clearErrorAfterTimeout();
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleEditProject = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${api}/api/projects/${projectId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: editedTitle, description: editedDescription }),
+      });
+      if (!response.ok) throw new Error("Failed to update project");
+      refreshProjectDetails();
+      setIsEditingProject(false);
+    } catch (err) {
+      setError("Failed to update project: " + err.message);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this project?");
+    if (!confirmed) return;
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${api}/api/projects/${projectId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Failed to delete project");
+      window.location.href = "/";
+    } catch (err) {
+      setError("Failed to delete project: " + err.message);
     }
   };
 
@@ -106,29 +137,34 @@ const ProjectDetails = () => {
 
   return (
     <div className="project-details">
-      {error && (
-        <div className="error" role="alert">
-          {error}
+      {error && <div className="error" role="alert">{error}</div>}
+
+      <div className="project-header-section">
+        <ProjectHeader project={project} />
+        <div className="project-actions">
+          {isEditingProject ? (
+            <>
+              <input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} />
+              <textarea value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} />
+              <button onClick={handleEditProject}>💾 Save</button>
+              <button onClick={() => setIsEditingProject(false)}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setIsEditingProject(true)}>✏️ Edit Project</button>
+              <button onClick={handleDeleteProject}>🗑️ Delete Project</button>
+              <button
+                className="add-task-button"
+                onClick={handleOpenForm}
+                disabled={actionLoading}
+                aria-disabled={actionLoading}
+              >
+                ➕ Add Task
+              </button>
+            </>
+          )}
         </div>
-      )}
-
-      <ProjectHeader project={project} projectId={projectId} />
-
-      {/* Uncomment below to enable visual progress bar */}
-      {/* <div className="project-progress">
-        <label htmlFor="progressBar">Progress: </label>
-        <progress id="progressBar" value={project.progress || 0} max="100" />
-        <span>{Math.round(project.progress || 0)}%</span>
-      </div> */}
-
-      <button
-        className="add-task-button"
-        onClick={handleOpenForm}
-        disabled={actionLoading}
-        aria-disabled={actionLoading}
-      >
-        ➕ Add Task
-      </button>
+      </div>
 
       {showForm && (
         <div
