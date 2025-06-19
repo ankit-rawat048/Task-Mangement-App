@@ -22,9 +22,11 @@
 }
 
 .project-title-row h1 {
-  margin: 0;
-  font-size: 3rem;
-  color: #333;
+    color: #1f2937;
+    margin: 0;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.4;
 }
 
 .input-title,
