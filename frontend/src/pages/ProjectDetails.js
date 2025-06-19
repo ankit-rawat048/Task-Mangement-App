@@ -3,7 +3,7 @@ import ProjectHeader from "../projectComponents/ProjectHeader";
 import TaskForm from "../projectComponents/TaskForm";
 import TaskList from "../projectComponents/TaskList";
 import { useParams } from "react-router-dom";
-import '../styles/csspages/ProjectDetails.css';
+import "../styles/csspages/ProjectDetails.css";
 
 const ProjectDetails = () => {
   const { id: projectId } = useParams();
@@ -26,9 +26,12 @@ const ProjectDetails = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${api}/api/projects/${projectId}/details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${api}/api/projects/${projectId}/details`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!response.ok) throw new Error("Failed to fetch project details");
         const data = await response.json();
         setProject(data.project);
@@ -43,7 +46,7 @@ const ProjectDetails = () => {
     fetchProjectDetails();
   }, [projectId, refreshTrigger, api, clearErrorAfterTimeout]);
 
-  const refreshProjectDetails = () => setRefreshTrigger(prev => !prev);
+  const refreshProjectDetails = () => setRefreshTrigger((prev) => !prev);
 
   const handleTaskUpdate = async (updatedTask) => {
     if (actionLoading) return;
@@ -103,7 +106,11 @@ const ProjectDetails = () => {
 
   return (
     <div className="project-details">
-      {error && <div className="error" role="alert">{error}</div>}
+      {error && (
+        <div className="error" role="alert">
+          {error}
+        </div>
+      )}
 
       <ProjectHeader project={project} projectId={projectId} />
 
@@ -119,7 +126,9 @@ const ProjectDetails = () => {
         onClick={handleOpenForm}
         disabled={actionLoading}
         aria-disabled={actionLoading}
-      >➕ Add Task</button>
+      >
+        ➕ Add Task
+      </button>
 
       {showForm && (
         <div
@@ -129,7 +138,7 @@ const ProjectDetails = () => {
           aria-labelledby="modal-title"
           onClick={handleCloseForm}
         >
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <TaskForm
               projectId={projectId}
               onClose={handleCloseForm}
@@ -143,15 +152,16 @@ const ProjectDetails = () => {
         </div>
       )}
 
-      <h3 className="task-heading">Tasks</h3>
-
-      <TaskList
-        tasks={(project.tasks || []).filter(task => !task.parentTask)}
-        projectId={projectId}
-        onTaskUpdated={handleTaskUpdate}
-        onTaskDeleted={handleTaskDelete}
-        actionLoading={actionLoading}
-      />
+      <div className="task-heading">
+        Tasks
+        <TaskList
+          tasks={(project.tasks || []).filter((task) => !task.parentTask)}
+          projectId={projectId}
+          onTaskUpdated={handleTaskUpdate}
+          onTaskDeleted={handleTaskDelete}
+          actionLoading={actionLoading}
+        />
+      </div>
     </div>
   );
 };
