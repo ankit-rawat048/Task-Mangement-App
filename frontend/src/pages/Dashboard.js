@@ -78,12 +78,22 @@ const Dashboard = () => {
         <main className="dashboard-main">
           <header className="dashboard-header">
             <h1>Welcome, {username}!</h1>
+            <div className="points">
+              <ul>here You can:
+                <li>Add project as you want</li>
+                <li>Add project task and their subtasks</li>
+                <li>edit task as progress</li>
+                <li>delete project/task whenever you want</li>
+                <li>see your project on graph</li>
+              </ul>
+            </div>
             <button onClick={createProjects} className="btn-primary">
               + Add New Project
             </button>
           </header>
 
-          <section className="stats-section">
+          <div className="data-div">
+            <section className="stats-section">
             <div className="stat-card">
               <p className="stat-number">{recentProjects.length}</p>
               <p className="stat-label">Projects</p>
@@ -140,6 +150,7 @@ const Dashboard = () => {
               )}
             </div>
           </section>
+          </div>
         </main>
       )}
     </div>
