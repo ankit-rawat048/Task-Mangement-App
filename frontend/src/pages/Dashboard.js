@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/csspages/Dashboard.css";
+import bgvideo from "../images/4990239-hd_1920_1080_30fps.mp4";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -57,7 +58,12 @@ const Dashboard = () => {
   }, [api]);
 
   return (
+    
     <div className="dashboard-container">
+      <video autoPlay loop muted playsInline className="video-bg">
+        <source src={bgvideo} type="video/mp4" />
+      </video>
+
       <Navbar />
 
       {loading ? (
