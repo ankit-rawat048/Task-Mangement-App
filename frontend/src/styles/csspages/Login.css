@@ -9,7 +9,9 @@
     justify-content: end;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #938c9b, #abb9d1);
+        background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9cB_tkPdWrTjrzRKZ6jrnzWpl0sW3ygdIQ&s);
+    background-repeat: no-repeat;
+    background-size: cover;
   }
   
   .login-box {
