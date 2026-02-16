@@ -9,7 +9,7 @@
     justify-content: end;
     align-items: center;
     height: 100vh;
-        background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9cB_tkPdWrTjrzRKZ6jrnzWpl0sW3ygdIQ&s);
+        background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9cB_tkPdWrTjrzRKZ6jrnzWpl0sW3ygdIQ&s');
     background-repeat: no-repeat;
     background-size: cover;
   }
