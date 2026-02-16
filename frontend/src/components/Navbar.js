@@ -10,7 +10,7 @@ const Navbar = () => {
 
       <nav className="navbar" role="navigation" aria-label="Main navigation">
         <div className="navbar-title" onClick={() => window.location.href = "/dashboard"}>
-          Manage Task
+          ManageTask
         </div>
 
         <div
