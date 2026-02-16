@@ -79,7 +79,7 @@ const Dashboard = () => {
           <header className="dashboard-header">
             <h1>Welcome, {username}!</h1>
             <button onClick={createProjects} className="btn-primary">
-              + New Project
+              + Add New Project
             </button>
           </header>
 
