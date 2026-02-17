@@ -1,60 +1,55 @@
-/* ---------- Modern Navbar ---------- */
+/* ===============================
+   DARK PRODUCTIVITY NAVBAR
+================================ */
 
 .navbar {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background: rgba(36, 41, 46, 0.85);
-  backdrop-filter: blur(10px);
-  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 28px;
+  padding: 16px 30px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  position: sticky;
+  top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
-/* Logo / Title */
-
+/* Logo */
 .navbar-title {
+  font-size: 20px;
   font-weight: 700;
-  font-size: 1.4rem;
-  letter-spacing: 1px;
+  color: #22c55e;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 .navbar-title:hover {
-  color: #58a6ff;
+  color: #38bdf8;
 }
 
 /* Links */
-
 .navbar-links {
   display: flex;
-  gap: 28px;
-  align-items: center;
+  gap: 25px;
 }
 
 .navbar-links a {
-  color: white;
   text-decoration: none;
+  color: #e2e8f0;
   font-weight: 500;
   position: relative;
-  padding: 6px 0;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
-/* Underline animation */
+/* Hover underline effect */
 .navbar-links a::after {
   content: "";
   position: absolute;
-  width: 0;
+  width: 0%;
   height: 2px;
+  bottom: -4px;
   left: 0;
-  bottom: 0;
-  background: linear-gradient(90deg,#58a6ff,#7ee787);
+  background: #38bdf8;
   transition: 0.3s;
 }
 
@@ -63,81 +58,62 @@
 }
 
 .navbar-links a:hover {
-  color: #58a6ff;
+  color: #38bdf8;
 }
 
-/* ---------- Hamburger ---------- */
-
+/* Hamburger */
 .hamburger {
   display: none;
   flex-direction: column;
-  cursor: pointer;
   gap: 5px;
-  width: 26px;
-  height: 20px;
-  justify-content: center;
   background: none;
   border: none;
+  cursor: pointer;
 }
 
 .hamburger div {
+  width: 25px;
   height: 3px;
   background: white;
-  border-radius: 3px;
   transition: 0.3s;
 }
 
-/* Animation */
-
-.hamburger.open div:nth-child(1){
-  transform: rotate(45deg) translate(5px,5px);
+/* Animate hamburger */
+.hamburger.open div:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
 }
-.hamburger.open div:nth-child(2){
+
+.hamburger.open div:nth-child(2) {
   opacity: 0;
 }
-.hamburger.open div:nth-child(3){
-  transform: rotate(-45deg) translate(5px,-5px);
+
+.hamburger.open div:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* ---------- Mobile ---------- */
+/* ===============================
+   MOBILE RESPONSIVE
+================================ */
 
-@media (max-width: 900px){
-
-  .hamburger{
-    display:flex;
+@media (max-width: 768px) {
+  .navbar-links {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: #1e293b;
+    flex-direction: column;
+    width: 200px;
+    padding: 20px;
+    border-radius: 12px;
+    display: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
   }
 
-  .navbar-links{
-    position:absolute;
-    top:70px;
-    right:0;
-    width:100%;
-    background:#1c1f23;
-    flex-direction:column;
-    align-items:center;
-    padding:20px 0;
-    gap:18px;
-    transform:translateY(-200%);
-    transition:0.4s;
+  .navbar-links.mobile-open {
+    display: flex;
   }
 
-  .navbar-links.mobile-open{
-    transform:translateY(0);
-  }
-
-  .navbar-links a{
-    font-size:1.1rem;
-  }
-}
-
-/* ---------- Extra Small Phones ---------- */
-
-@media (max-width:480px){
-  .navbar{
-    padding:10px 16px;
-  }
-
-  .navbar-title{
-    font-size:1.1rem;
+  .hamburger {
+    display: flex;
   }
 }
