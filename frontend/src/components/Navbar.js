@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import "../styles/components/Navbar.css";
-import  {useNavigate} from "react-router-dom";
 
-const createProjects = () => navigate("/createproject");
-
-const navigate = useNavigate();
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <nav className="navbar" role="navigation" aria-label="Main navigation">
       <div
@@ -25,9 +22,6 @@ const Navbar = () => {
         <Link to="/howto">How To</Link>
         <Link to="/projects">Projects</Link>
         <Link to="/settings">Settings</Link>
-        <button onClick={createProjects} className="btn-primary">
-              + Add New Project
-            </button>
       </div>
 
       <button
