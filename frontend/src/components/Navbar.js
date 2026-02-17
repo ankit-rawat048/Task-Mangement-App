@@ -22,6 +22,9 @@ const Navbar = () => {
         <Link to="/howto">How To</Link>
         <Link to="/projects">Projects</Link>
         <Link to="/settings">Settings</Link>
+        <button onClick={createProjects} className="btn-primary">
+              + Add New Project
+            </button>
       </div>
 
       <button
